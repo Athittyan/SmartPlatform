@@ -13,8 +13,7 @@
 
     <nav>
         <ul>
-            <li><a href="/">🏠 Accueil (Objets intellectuels)</a></li>
-            <li><a href="/profile">⚙️ Mon Profil</a></li>
+            <li><a href="{{ route('home') }}">🏠 Accueil (Objets intellectuels)</a></li>
             <li>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

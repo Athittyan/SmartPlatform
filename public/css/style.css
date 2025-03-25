@@ -1,69 +1,65 @@
-/* Reset basique */
-* {
+
+/* Général */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    color: #333;
 }
 
-/* Corps de page */
-body {
-    background-color: #f9f9f9;
-    font-family: Arial, sans-serif;
-    padding: 20px;
+/* Conteneur principal */
+.container {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 0 20px;
 }
 
 /* Titres */
 h1, h2 {
-    color: #1c87c9;
-    margin-bottom: 20px;
+    color: #3490dc;
 }
 
-/* Formulaires */
-form {
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    max-width: 500px;
-    margin-bottom: 30px;
+/* Formulaire de recherche */
+.search-bar {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
 }
 
-label {
-    display: block;
-    margin-top: 15px;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"] {
-    width: 100%;
-    padding: 10px;
+.search-bar input[type="text"] {
+    padding: 8px;
+    width: 60%;
+    max-width: 400px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 5px 0 0 5px;
+    outline: none;
 }
 
-/* Boutons */
-button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background-color: #1c87c9;
+.search-bar button {
+    padding: 8px 15px;
+    background-color: #3490dc;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 0 5px 5px 0;
     cursor: pointer;
 }
 
-button:hover {
-    background-color: #155d8c;
+/* Carte d’objet */
+.objet-card {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* Messages */
-p.success {
-    color: green;
+.objet-card ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
 }
 
-p.error {
-    color: red;
+.objet-card li {
+    margin-bottom: 5px;
 }

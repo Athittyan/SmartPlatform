@@ -17,7 +17,7 @@ class ObjetIntellectuelController extends Controller
 
     $objets = $query->get();
 
-    return view('acceuil', compact('objets'));
+    return view('objets.index', compact('objets'));
 }
 
 

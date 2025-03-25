@@ -1,20 +1,21 @@
 <?php
 
-use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ObjetIntellectuelController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// ✅ Nouvelle page d’accueil : liste des objets visibles en "free tour"
-Route::get('/', [ObjetIntellectuelController::class, 'index'])->name('home');
+// Page d’accueil simple avec message de bienvenue
+Route::get('/', function () {
+    return view('acceuil');
+})->name('home');
 
-// ✅ Pages objets intellectuels (ajout/gestion)
+// Pages objets intellectuels (liste, ajout, enregistrement)
 Route::get('/objets', [ObjetIntellectuelController::class, 'index'])->name('objets.index');
 Route::get('/objets/create', [ObjetIntellectuelController::class, 'create'])->name('objets.create');
 Route::post('/objets', [ObjetIntellectuelController::class, 'store'])->name('objets.store');
 
-// ✅ Redirection après connexion
+// Redirection après connexion (vers admin ou accueil)
 Route::get('/dashboard', function () {
     return redirect('/redirect');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -24,8 +25,8 @@ Route::get('/redirect', function () {
     return $user->role === 'admin' ? redirect('/admin') : redirect('/');
 })->middleware(['auth']);
 
-// ✅ Espace admin
+// Espace admin (accès restreint)
 Route::get('/admin', [AdminController::class, 'index'])->middleware('admin');
 
-// ✅ Auth Breeze
+// Authentification Breeze
 require __DIR__.'/auth.php';
