@@ -1,100 +1,137 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 style="font-size: 1.8em; margin-bottom: 20px;">➕ Ajouter un objet intellectuel</h1>
+    <div class="container">
+        <h1 style="color: #3490dc; margin-bottom: 20px;">➕ Ajouter un objet intellectuel</h1>
 
-    <form action="{{ route('objets.store') }}" method="POST" style="max-width: 600px;">
-        @csrf
+        <form action="{{ route('objets.store') }}" method="POST">
+            @csrf
 
-        <div style="margin-bottom: 15px;">
-            <label>Nom de l’objet :</label>
-            <input type="text" name="nom" required class="w-full border px-3 py-2 rounded">
-        </div>
+            <div>
+                <label>Nom de l’objet :</label>
+                <input type="text" name="nom" required>
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>Type :</label>
-            <select name="type" required class="w-full border px-3 py-2 rounded">
-                <option value="">-- Choisir un type --</option>
-                <option value="Thermostat">Thermostat connecté</option>
-                <option value="Lampe">Lampe intelligente</option>
-                <option value="TV">TV connectée</option>
-                <option value="Capteur">Capteur de présence</option>
-                <option value="Store">Store électrique</option>
-            </select>
-        </div>
+            <div>
+                <label>Type :</label>
+                <select name="type" id="type" onchange="afficherChampsSpecifiques()" required>
+                    <option value="">-- Choisir un type --</option>
+                    <option value="thermostat">Thermostat</option>
+                    <option value="lampe">Lampe</option>
+                    <option value="tv">TV</option>
+                    <option value="capteur">Capteur de présence</option>
+                    <option value="store">Store Électrique</option>
+                </select>
+            </div>
 
-        {{-- Champs communs / selon type --}}
+            {{-- THERMOSTAT --}}
+            <div id="champ-temperature" class="champ-optionnel" style="display: none;">
+                <label>Température actuelle (°C) :</label>
+                <input type="number" name="temperature_actuelle" step="0.1">
+            </div>
+            <div id="champ-temperature_cible" class="champ-optionnel" style="display: none;">
+                <label>Température cible (°C) :</label>
+                <input type="number" name="temperature_cible" step="0.1">
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>Température actuelle (°C) :</label>
-            <input type="number" name="temperature_actuelle" step="0.1" class="w-full border px-3 py-2 rounded">
-        </div>
+            {{-- MODE (thermostat et store) --}}
+            <div id="champ-mode" class="champ-optionnel" style="display: none;">
+                <label>Mode :</label>
+                <input type="text" name="mode">
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>Température cible (°C) :</label>
-            <input type="number" name="temperature_cible" step="0.1" class="w-full border px-3 py-2 rounded">
-        </div>
+            {{-- LAMPE --}}
+            <div id="champ-etat" class="champ-optionnel" style="display: none;">
+                <label>État :</label>
+                <select name="etat">
+                    <option value="">-- Choisir --</option>
+                    <option value="allumée">Allumée</option>
+                    <option value="éteinte">Éteinte</option>
+                </select>
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>État :</label>
-            <select name="etat" class="w-full border px-3 py-2 rounded">
-                <option value="">-- Choisir --</option>
-                <option value="allumé">Allumé</option>
-                <option value="éteint">Éteint</option>
-            </select>
-        </div>
+            <div id="champ-luminosite" class="champ-optionnel" style="display: none;">
+                <label>Luminosité (%) :</label>
+                <input type="number" name="luminosite">
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>Luminosité (%) :</label>
-            <input type="number" name="luminosite" min="0" max="100" class="w-full border px-3 py-2 rounded">
-        </div>
+            <div id="champ-couleur" class="champ-optionnel" style="display: none;">
+                <label>Couleur :</label>
+                <input type="text" name="couleur">
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>Couleur :</label>
-            <input type="text" name="couleur" class="w-full border px-3 py-2 rounded">
-        </div>
+            {{-- TV --}}
+            <div id="champ-chaine" class="champ-optionnel" style="display: none;">
+                <label>Chaîne actuelle :</label>
+                <input type="text" name="chaine_actuelle">
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>Chaîne actuelle :</label>
-            <input type="text" name="chaine_actuelle" class="w-full border px-3 py-2 rounded">
-        </div>
+            <div id="champ-volume" class="champ-optionnel" style="display: none;">
+                <label>Volume :</label>
+                <input type="number" name="volume">
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>Volume :</label>
-            <input type="number" name="volume" min="0" max="100" class="w-full border px-3 py-2 rounded">
-        </div>
+            {{-- CAPTEUR --}}
+            <div id="champ-presence" class="champ-optionnel" style="display: none;">
+                <label>Présence détectée :</label>
+                <select name="presence">
+                    <option value="">-- Choisir --</option>
+                    <option value="1">Oui</option>
+                    <option value="0">Non</option>
+                </select>
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>Mode :</label>
-            <input type="text" name="mode" class="w-full border px-3 py-2 rounded">
-        </div>
+            <div id="champ-duree" class="champ-optionnel" style="display: none;">
+                <label>Durée de présence (secondes) :</label>
+                <input type="number" name="duree_presence">
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>Présence détectée :</label>
-            <select name="presence" class="w-full border px-3 py-2 rounded">
-                <option value="">-- Choisir --</option>
-                <option value="1">Oui</option>
-                <option value="0">Non</option>
-            </select>
-        </div>
+            {{-- STORE --}}
+            <div id="champ-position" class="champ-optionnel" style="display: none;">
+                <label>Position du store (%) :</label>
+                <input type="number" name="position">
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>Durée de présence (secondes) :</label>
-            <input type="number" name="duree_presence" class="w-full border px-3 py-2 rounded">
-        </div>
+            {{-- TOUS LES OBJETS --}}
+            <div id="champ-interaction" class="champ-optionnel" style="display: none;">
+                <label>Dernière interaction :</label>
+                <input type="datetime-local" name="derniere_interaction">
+            </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>Position du store (%) :</label>
-            <input type="number" name="position" min="0" max="100" class="w-full border px-3 py-2 rounded">
-        </div>
+            <button type="submit" class="btn-green">Enregistrer</button>
+        </form>
+    </div>
 
-        <div style="margin-bottom: 15px;">
-            <label>Dernière interaction :</label>
-            <input type="datetime-local" name="derniere_interaction" class="w-full border px-3 py-2 rounded">
-        </div>
+    <script>
+        function afficherChampsSpecifiques() {
+            const type = document.getElementById("type").value;
 
-        <button type="submit" style="background-color: #38c172; color: white; padding: 10px 20px; border: none; border-radius: 5px;">
-            Enregistrer
-        </button>
-    </form>
+            document.querySelectorAll(".champ-optionnel").forEach(el => el.style.display = "none");
+
+            if (type === "thermostat") {
+                afficher(["champ-temperature", "champ-temperature_cible", "champ-mode"]);
+            }
+            else if (type === "lampe") {
+                afficher(["champ-etat", "champ-luminosite", "champ-couleur"]);
+            }
+            else if (type === "tv") {
+                afficher(["champ-chaine", "champ-volume"]);
+            }
+            else if (type === "capteur") {
+                afficher(["champ-presence", "champ-duree"]);
+            }
+            else if (type === "store") {
+                afficher(["champ-position", "champ-mode"]);
+            }
+
+            afficher(["champ-interaction"]);
+        }
+
+        function afficher(ids) {
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = "block";
+            });
+        }
+    </script>
 @endsection

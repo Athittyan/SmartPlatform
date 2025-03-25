@@ -2,35 +2,61 @@
 
 @section('content')
 <div class="container">
-    <h1>📚 Objets Intellectuels (Salon)</h1>
+    <h1>Objets Intellectuels (Salon)</h1>
 
-    <a href="{{ route('objets.create') }}" class="btn">➕ Ajouter un objet</a>
+    <div class="search-bar">
+        <form method="GET" action="{{ route('objets.index') }}">
+            <input type="text" name="search" placeholder="Rechercher un objet..." value="{{ request('search') }}">
+            <button type="submit">🔍 Rechercher</button>
+        </form>
+    </div>
 
-    @if (session('success'))
-        <p style="color: green;">{{ session('success') }}</p>
+    @if(request('search'))
+        <p style="text-align: center; margin-top: -20px; margin-bottom: 30px;">
+            Résultats pour : <strong>{{ request('search') }}</strong>
+        </p>
     @endif
 
-    <!-- 🔍 Barre de recherche -->
-    <form method="GET" action="{{ route('objets.index') }}" style="margin-top: 20px;">
-        <input type="text" name="search" placeholder="Rechercher un objet..." value="{{ request('search') }}">
-        <button type="submit">🔍 Rechercher</button>
-    </form>
+    @forelse ($objets as $objet)
+        <div class="objet-card">
+            <h2>{{ $objet->nom }} ({{ $objet->type }})</h2>
+            <ul>
+                @if($objet->type === 'thermostat')
+                    <li>🌡️ Température actuelle : {{ $objet->temperature_actuelle ?? 'Non renseignée' }}°C</li>
+                    <li>🎯 Température cible : {{ $objet->temperature_cible ?? 'Non renseignée' }}°C</li>
+                    <li>⚙️ Mode : {{ $objet->mode ?? 'Non renseigné' }}</li>
 
-    <ul style="margin-top: 30px;">
-        @forelse ($objets as $objet)
-            <li>
-                <strong>{{ $objet->nom }}</strong><br>
-                Température actuelle : {{ $objet->temperature_actuelle }}°C<br>
-                Température cible : {{ $objet->temperature_cible }}°C<br>
-                Mode : {{ $objet->mode }}<br>
-                Connectivité : {{ $objet->connectivite }}<br>
-                État batterie : {{ $objet->etat_batterie }}%<br>
-                Dernière interaction : {{ $objet->derniere_interaction }}
-            </li>
-            <hr>
-        @empty
-            <li>Aucun objet trouvé.</li>
-        @endforelse
-    </ul>
+                @elseif($objet->type === 'lampe')
+                    <li>💡 État : {{ $objet->etat ?? 'Non renseigné' }}</li>
+                    <li>✨ Luminosité : {{ $objet->luminosite ?? 'Non renseignée' }}</li>
+                    <li>🎨 Couleur : {{ $objet->couleur ?? 'Non renseignée' }}</li>
+
+                @elseif($objet->type === 'tv')
+                    <li>📺 Chaîne actuelle : {{ $objet->chaine_actuelle ?? 'Non renseignée' }}</li>
+                    <li>🔊 Volume : {{ $objet->volume ?? 'Non renseigné' }}</li>
+
+                @elseif($objet->type === 'capteur')
+                    <li>🕵️‍♂️ Présence détectée : {{ $objet->presence ? 'Oui' : 'Non' }}</li>
+                    <li>⏱️ Durée de présence : {{ $objet->duree_presence ?? 'Non renseignée' }} secondes</li>
+
+                @elseif($objet->type === 'store')
+                    <li>📍 Position du store : {{ $objet->position ?? 'Non renseignée' }}%</li>
+                @endif
+
+                @if($objet->derniere_interaction)
+                    <li>⏰ Dernière interaction : {{ $objet->derniere_interaction }}</li>
+                @endif
+            </ul>
+        </div>
+    @empty
+        <div style="text-align: center;">
+            <p>Aucun objet ne correspond à votre recherche.</p>
+            @if(request('search'))
+                <a href="{{ route('objets.index') }}" style="display: inline-block; margin-top: 10px; padding: 8px 12px; background-color: #3490dc; color: white; border-radius: 5px; text-decoration: none;">
+                    🔁 Voir tous les objets
+                </a>
+            @endif
+        </div>
+    @endforelse
 </div>
 @endsection

@@ -8,18 +8,17 @@ use Illuminate\Http\Request;
 class ObjetIntellectuelController extends Controller
 {
     public function index(Request $request)
-{
-    $query = ObjetIntellectuel::query();
+    {
+        $query = ObjetIntellectuel::query();
 
-    if ($request->has('search')) {
-        $query->where('nom', 'like', '%' . $request->search . '%');
+        if ($request->has('search')) {
+            $query->where('nom', 'like', '%' . $request->search . '%');
+        }
+
+        $objets = $query->get();
+
+        return view('objets.index', compact('objets'));
     }
-
-    $objets = $query->get();
-
-    return view('objets.index', compact('objets'));
-}
-
 
     public function create()
     {
@@ -27,27 +26,28 @@ class ObjetIntellectuelController extends Controller
     }
 
     public function home(Request $request)
-{
-    $search = $request->input('search');
+    {
+        $search = $request->input('search');
 
-    $objets = ObjetIntellectuel::query()
-        ->when($search, function ($query, $search) {
-            return $query->where('nom', 'like', "%$search%");
-        })
-        ->get();
+        $objets = ObjetIntellectuel::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('nom', 'like', "%$search%");
+            })
+            ->get();
 
-    return view('acceuil', compact('objets', 'search'));
-}
+        return view('acceuil', compact('objets', 'search'));
+    }
 
     public function store(Request $request)
     {
         $request->validate([
             'nom' => 'required',
             'etat_batterie' => 'nullable|integer',
-            // ajoute ici les autres règles si besoin
+            // ajoute ici les autres règles de validation si besoin
         ]);
 
         ObjetIntellectuel::create($request->all());
-        return redirect()->route('objets.index')->with('success', 'Objet ajouté avec succès.');
+
+        return redirect()->route('objets.index')->with('success', 'L\'objet a bien été ajouté.');
     }
 }
