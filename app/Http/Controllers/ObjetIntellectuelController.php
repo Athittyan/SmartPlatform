@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class ObjetIntellectuelController extends Controller
 {
+
     // Méthode pour afficher la liste des objets
     public function index(Request $request)
     {
@@ -14,9 +15,11 @@ class ObjetIntellectuelController extends Controller
         $query = ObjetIntellectuel::query();
 
         // Si une recherche est effectuée, filtrer par nom
+
         if ($request->has('search')) {
             $query->where('nom', 'like', '%' . $request->search . '%');
         }
+
 
         // Récupérer les objets selon la requête
         $objets = $query->get();
@@ -26,17 +29,22 @@ class ObjetIntellectuelController extends Controller
     }
 
     // Méthode pour afficher un formulaire de création d'objet
+
     public function create()
     {
         return view('objets.create');
     }
 
+
     // Méthode pour afficher la page d'accueil avec des objets filtrés
+
     public function home(Request $request)
     {
         $search = $request->input('search');
 
+
         // Filtrer les objets par nom si une recherche est faite
+
         $objets = ObjetIntellectuel::query()
             ->when($search, function ($query, $search) {
                 return $query->where('nom', 'like', "%$search%");
@@ -71,6 +79,7 @@ class ObjetIntellectuelController extends Controller
         ObjetIntellectuel::create($request->all());
 
         // Rediriger vers la liste des objets avec un message de succès
+
         return redirect()->route('objets.index')->with('success', 'L\'objet a bien été ajouté.');
     }
 }

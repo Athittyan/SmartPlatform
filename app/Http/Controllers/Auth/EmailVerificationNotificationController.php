@@ -16,6 +16,7 @@ class EmailVerificationNotificationController extends Controller
         if ($request->user()->hasVerifiedEmail()) {
             return redirect()->route('profile.edit');
 
+
         }
 
         $request->user()->sendEmailVerificationNotification();

@@ -6,7 +6,9 @@
             <h2 style="text-align: center; margin-bottom: 20px;">Connexion</h2>
 
             @if (session('status'))
+
                 <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #c3e6cb;">
+
                     {{ session('status') }}
                 </div>
             @endif

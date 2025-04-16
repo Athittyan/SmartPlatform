@@ -2,6 +2,7 @@
 
 @section('content')
 
+
     <div style="max-width: 800px; margin: 100px auto; text-align: center;">
         {{-- ✅ Message de succès --}}
         @if (session('success'))
@@ -60,5 +61,6 @@
             </div>
             @endisset
         @endauth
+
     </div>
 @endsection

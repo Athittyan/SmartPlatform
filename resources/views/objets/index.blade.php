@@ -18,6 +18,7 @@
     @endif
 
     @forelse ($objets as $objet)
+
         <div class="objet-card" style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 10px 0;">
             <a href="{{ route('objets.show', $objet->id) }}" style="text-decoration: none; color: inherit;">
                 <h2>{{ $objet->nom }} ({{ $objet->type }})</h2>
@@ -49,6 +50,7 @@
                     @endif
                 </ul>
             </a>
+
         </div>
     @empty
         <div style="text-align: center;">

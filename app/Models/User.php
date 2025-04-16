@@ -12,6 +12,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Les attributs qui peuvent être assignés en masse.
+
+
      *
      * @var list<string>
      */
@@ -20,6 +22,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
+
         'pseudo',        // Ajouter 'pseudo' ici
         'age',           // Ajouter 'age' ici
         'sexe',          // Ajouter 'sexe' ici
@@ -29,6 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Les attributs qui doivent être cachés pour la sérialisation.
+
      *
      * @var list<string>
      */
@@ -38,7 +42,9 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
+
      * Définir les attributs qui devraient être castés.
+
      *
      * @return array<string, string>
      */

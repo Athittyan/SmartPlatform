@@ -8,7 +8,9 @@
             @auth
                 @if(Auth::user()->role === 'admin')
                     <a href="{{ route('objets.create') }}" style="margin-left: 10px;">Ajouter un objet</a>
+
                     <li><a href="{{ route('admin.emails.index') }}">👥 Gérer les membres de la famille</a></li>
+
                 @endif
             @endauth
         </div>
@@ -28,6 +30,7 @@
                 </div>
 
                 {{-- Déconnexion --}}
+
                 <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                     @csrf
                     <button type="submit" style="background: none; border: none; color: blue; cursor: pointer;">
@@ -36,7 +39,9 @@
                 </form>
             @else
                 <a href="{{ route('login') }}" style="color: blue;">Connexion</a>
+
                 <a href="{{ route('register') }}" style="color: blue;">Inscription</a>
+
             @endauth
         </div>
     </div>

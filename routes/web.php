@@ -1,4 +1,5 @@
 <?php
+
 use App\Models\User;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ObjetIntellectuelController;
@@ -21,10 +22,12 @@ Route::post('/objets', [ObjetIntellectuelController::class, 'store'])->name('obj
 Route::get('/objets/{id}', [ObjetIntellectuelController::class, 'show'])->name('objets.show');
 
 // Redirection connexion (admin ou accueil)
+
 Route::get('/redirect', function () {
     $user = Auth::user();
     return $user->role === 'admin' ? redirect('/admin') : redirect('/');
 })->middleware(['auth']);
+
 
 // Espace admin
 Route::get('/admin', [AdminController::class, 'index'])->middleware('admin');
@@ -45,5 +48,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/emails', [EmailAutoriseController::class, 'store'])->name('emails.store');
     Route::delete('/emails/{id}', [EmailAutoriseController::class, 'destroy'])->name('emails.destroy');
 });
+
 
 require __DIR__.'/auth.php';
