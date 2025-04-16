@@ -8,7 +8,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\Admin\EmailAutoriseController;
+use App\Http\Controllers\EmailAutoriseController;
+
 
 Route::get('/', function () {
     return view('acceuil');  // Retourne uniquement la vue sans récupérer les utilisateurs ici
