@@ -82,4 +82,42 @@ class ObjetIntellectuelController extends Controller
 
         return redirect()->route('objets.index')->with('success', 'L\'objet a bien été ajouté.');
     }
+    public function toggleEtat($id)
+{
+    $objet = ObjetIntellectuel::findOrFail($id);
+    $objet->etat = $objet->etat === 'on' ? 'off' : 'on';
+    $objet->save();
+
+    return redirect()->back()->with('success', 'État modifié !');
+}
+
+public function changeVolume(Request $request, $id)
+{
+    $objet = ObjetIntellectuel::findOrFail($id);
+
+    if ($objet->type === 'TV') {
+        $request->validate([
+            'volume' => 'required|integer|min:0|max:100',
+        ]);
+        $objet->volume = $request->volume;
+        $objet->save();
+    }
+
+    return redirect()->back()->with('success', 'Volume modifié !');
+}
+public function changeChaine(Request $request, $id)
+{
+    $objet = ObjetIntellectuel::findOrFail($id);
+
+    if ($objet->type === 'TV') {
+        $request->validate([
+            'chaine' => 'required|string|max:100',
+        ]);
+        $objet->chaine_actuelle = $request->chaine;
+        $objet->save();
+    }
+
+    return redirect()->back()->with('success', 'Chaîne modifiée !');
+}
+
 }

@@ -49,6 +49,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/emails', [EmailAutoriseController::class, 'store'])->name('emails.store');
     Route::delete('/emails/{id}', [EmailAutoriseController::class, 'destroy'])->name('emails.destroy');
 });
+Route::resource('objets', ObjetIntellectuelController::class);
+Route::post('/objets/{id}/toggle-etat', [ObjetIntellectuelController::class, 'toggleEtat'])->name('objets.toggleEtat');
+Route::post('/objets/{id}/change-volume', [ObjetIntellectuelController::class, 'changeVolume'])->name('objets.changeVolume');
+Route::post('/objets/{id}/change-chaine', [ObjetIntellectuelController::class, 'changeChaine'])->name('objets.changeChaine');
+
 
 
 require __DIR__.'/auth.php';
