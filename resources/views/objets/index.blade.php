@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1>Objets Intellectuels (Salon)</h1>
+    <h1 style="text-align: center; color: #3490dc; margin-top: 30px;">Objets Intellectuels (Salon)</h1>
 
     <div class="search-bar">
         <form method="GET" action="{{ route('objets.index') }}">
@@ -19,39 +19,32 @@
 
     @forelse ($objets as $objet)
 
-        <div class="objet-card" style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 10px 0;">
-            <a href="{{ route('objets.show', $objet->id) }}" style="text-decoration: none; color: inherit;">
-                <h2>{{ $objet->nom }} ({{ $objet->type }})</h2>
-                <ul>
-                    @if($objet->type === 'thermostat')
-                        <li>🌡️ Température actuelle : {{ $objet->temperature_actuelle ?? 'Non renseignée' }}°C</li>
-                        <li>🎯 Température cible : {{ $objet->temperature_cible ?? 'Non renseignée' }}°C</li>
-                        <li>⚙️ Mode : {{ $objet->mode ?? 'Non renseigné' }}</li>
+        @php
+            $images = [
+                'tv' => 'TV.PNG',
+                'lampe' => 'Lampe.PNG',
+                'thermostat' => 'Thermostat.PNG',
+                'capteur de présence' => 'capteur de presence.PNG',
+                'store électrique' => 'Store electrique.PNG'
+            ];
+            $nomImage = $images[strtolower($objet->type)] ?? 'default.png';
+        @endphp
 
-                    @elseif($objet->type === 'lampe')
-                        <li>💡 État : {{ $objet->etat ?? 'Non renseigné' }}</li>
-                        <li>✨ Luminosité : {{ $objet->luminosite ?? 'Non renseignée' }}</li>
-                        <li>🎨 Couleur : {{ $objet->couleur ?? 'Non renseignée' }}</li>
+        <div class="objet-card" style="display: flex; align-items: center; gap: 20px;">
+            <img src="{{ asset('images/' . $nomImage) }}"
+                 alt="Image {{ $objet->type }}"
+                 style="width: 120px; height: 120px; object-fit: cover; border-radius: 10px;">
 
-                    @elseif($objet->type === 'tv')
-                        <li>📺 Chaîne actuelle : {{ $objet->chaine_actuelle ?? 'Non renseignée' }}</li>
-                        <li>🔊 Volume : {{ $objet->volume ?? 'Non renseigné' }}</li>
-
-                    @elseif($objet->type === 'capteur')
-                        <li>🕵️‍♂️ Présence détectée : {{ $objet->presence ? 'Oui' : 'Non' }}</li>
-                        <li>⏱️ Durée de présence : {{ $objet->duree_presence ?? 'Non renseignée' }} secondes</li>
-
-                    @elseif($objet->type === 'store')
-                        <li>📍 Position du store : {{ $objet->position ?? 'Non renseignée' }}%</li>
-                    @endif
-
-                    @if($objet->derniere_interaction)
-                        <li>⏰ Dernière interaction : {{ $objet->derniere_interaction }}</li>
-                    @endif
-                </ul>
-            </a>
-
+            <div>
+                <a href="{{ route('objets.show', $objet->id) }}" style="font-size: 1.2em; font-weight: bold; color: #3490dc;">
+                    {{ $objet->nom }} ({{ $objet->type }})
+                </a>
+                <p style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                    🕒 Dernière interaction : {{ $objet->derniere_interaction }}
+                </p>
+            </div>
         </div>
+
     @empty
         <div style="text-align: center;">
             <p>Aucun objet ne correspond à votre recherche.</p>
