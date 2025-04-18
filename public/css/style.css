@@ -1,14 +1,12 @@
-
 /* Général */
 body {
     font-family: Arial, sans-serif;
-    background-color: #faf8f9;
+    background-color: rgb(209, 217, 248) !important;
     margin: 0;
     padding: 0;
     color: #333;
-    background-color: pink !important;
 }
-}
+
 /* Conteneur principal */
 .container {
     max-width: 1000px;
@@ -63,4 +61,48 @@ h1, h2 {
 
 .objet-card li {
     margin-bottom: 5px;
+}
+
+/* Boutons navigation */
+.nav-btn {
+    background-color: white;
+    color: #3490dc;
+    padding: 10px 18px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border: 2px solid #3490dc;
+}
+
+.nav-btn:hover {
+    background-color: #3490dc;
+    color: white;
+}
+
+.nav-btn.logout {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 2px solid #f5c6cb;
+}
+
+.nav-btn.logout:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+.nav-btn.small {
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    background-color: #e6f0ff;
+    color: #333;
+    margin-left: 5px;
+}
+
+.nav-btn.small:hover {
+    background-color: #3490dc;
+    color: white;
 }

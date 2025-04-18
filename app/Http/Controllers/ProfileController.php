@@ -60,7 +60,8 @@ class ProfileController extends Controller
         $user->save();
 
         // Redirection vers le tableau de bord avec message de succès
-        return redirect()->route('dashboard')->with('success', 'Profil mis à jour avec succès.');
+        return redirect()->back()->with('success', 'Profil mis à jour avec succès.');
+
     }
 
 }
