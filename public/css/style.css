@@ -1,21 +1,20 @@
 
-    /* Général */
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f8f9fa;
-        margin: 0;
-        padding: 0;
-        color: #333;
-
-        background-color: pink !important;
-    }
-
-    /* Conteneur principal */
-    .container {
-        max-width: 1000px;
-        margin: 50px auto;
-        padding: 0 20px;
-    }
+/* Général */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #faf8f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    background-color: pink !important;
+}
+}
+/* Conteneur principal */
+.container {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
 
     /* Titres */
     h1, h2 {
