@@ -10,10 +10,11 @@
     <!-- ✅ Feuille de style personnalisée -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0;">
+<body class="{{ request()->routeIs('home') ? '' : 'page-standard' }}">
+    
     @include('layouts.navbar')
 
-    <main style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+    <main>
         @yield('content')
     </main>
 

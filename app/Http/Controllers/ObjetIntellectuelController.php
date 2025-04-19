@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ObjetIntellectuel;
+use App\Models\InteractionObjet;
 use Illuminate\Http\Request;
 
 class ObjetIntellectuelController extends Controller
@@ -56,14 +57,21 @@ class ObjetIntellectuelController extends Controller
     }
 
     // Méthode pour afficher les détails d'un objet
-    public function show($id)
-    {
-        // Trouver l'objet par son ID
-        $objet = ObjetIntellectuel::findOrFail($id);
+public function show($id)
+{
+    $objet = ObjetIntellectuel::findOrFail($id);
 
-        // Retourner la vue des détails de l'objet
-        return view('objets.show', compact('objet'));
-    }
+    // Récupérer les interactions associées à cet objet
+    $interactions = InteractionObjet::where('objet_intellectuel_id', $id)
+    ->orderBy('created_at', 'desc')
+    ->take(7)
+    ->get();
+
+
+    // Passer les données à la vue
+    return view('objets.show', compact('objet', 'interactions'));
+}
+
 
     // Méthode pour enregistrer un objet dans la base de données
     public function store(Request $request)

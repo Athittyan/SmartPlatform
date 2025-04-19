@@ -1,7 +1,7 @@
 /* Général */
 body {
     font-family: Arial, sans-serif;
-    background-color: rgb(209, 217, 248) !important;
+    background-color: rgb(209, 217, 248);
     margin: 0;
     padding: 0;
     color: #333;
@@ -63,7 +63,7 @@ h1, h2 {
     margin-bottom: 5px;
 }
 
-/* Boutons navigation */
+/* Boutons de navigation */
 .nav-btn {
     background-color: white;
     color: #3490dc;
@@ -105,4 +105,26 @@ h1, h2 {
 .nav-btn.small:hover {
     background-color: #3490dc;
     color: white;
+}
+
+table.interactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+table.interactions-table th,
+table.interactions-table td {
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    text-align: center;
+}
+
+table.interactions-table th {
+    background-color: #f0f4ff;
+    font-weight: bold;
 }
