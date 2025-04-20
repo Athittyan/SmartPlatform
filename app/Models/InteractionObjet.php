@@ -9,7 +9,7 @@ class InteractionObjet extends Model
 {
     use HasFactory;
 
-    protected $table = 'interactions_objets'; // 👈 force Laravel à utiliser le bon nom de table
+    protected $table = 'interactions_objets'; 
 
     protected $fillable = [
         'objet_intellectuel_id',
