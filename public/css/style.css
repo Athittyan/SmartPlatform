@@ -107,24 +107,71 @@ h1, h2 {
     color: white;
 }
 
-table.interactions-table {
-    width: 100%;
+h2 {
+    text-align: center;
+}   
+/* Zone contenant tableau + graphique */
+.interactions-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 2rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 1rem;
+    background-color: transparent;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Tableau */
+.interactions-table {
+    width: 90%; /* tu peux ajuster entre 70% et 100% selon l'effet voulu */
+    margin: 2rem auto; /* ← ça centre le tableau */
     border-collapse: collapse;
-    margin-top: 20px;
-    background-color: #fff;
+    background-color: white;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-table.interactions-table th,
-table.interactions-table td {
+
+/* Entêtes et cellules */
+.interactions-table th,
+.interactions-table td {
     border: 1px solid #e0e0e0;
     padding: 10px;
     text-align: center;
 }
 
-table.interactions-table th {
+.interactions-table th {
     background-color: #f0f4ff;
     font-weight: bold;
+}
+
+/* Graphique consommation */
+#consumptionChart {
+    flex: 1;
+    max-width: 700px;
+    height: 350px;
+    margin: 0 auto;
+}
+
+.details-options-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.options-all {
+    flex-shrink: 0;
+    min-width: 250px;
+    max-width: 300px;
+    background-color: transparent;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
