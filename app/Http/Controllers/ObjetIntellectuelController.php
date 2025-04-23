@@ -3,47 +3,52 @@
 namespace App\Http\Controllers;
 
 use App\Models\ObjetIntellectuel;
+use App\Models\InteractionObjet;
 use Illuminate\Http\Request;
 
 class ObjetIntellectuelController extends Controller
 {
-
-    // Méthode pour afficher la liste des objets
     public function index(Request $request)
-    {
-        // Initialiser la requête pour récupérer les objets
-        $query = ObjetIntellectuel::query();
+{
+    $query = ObjetIntellectuel::query();
 
-        // Si une recherche est effectuée, filtrer par nom
-
-        if ($request->has('search')) {
-            $query->where('nom', 'like', '%' . $request->search . '%');
-        }
-
-
-        // Récupérer les objets selon la requête
-        $objets = $query->get();
-
-        // Retourner la vue avec les objets récupérés
-        return view('objets.index', compact('objets'));
+    // 🔍 Recherche mots-clés (nom + description)
+    if ($request->filled('search')) {
+        $query->where('nom', 'like', '%' . $request->search . '%');
     }
 
-    // Méthode pour afficher un formulaire de création d'objet
+    // 🎛️ Filtre par type
+    if ($request->filled('type')) {
+        $query->where('type', $request->type);
+    }
 
+    // ⚡ Filtre par état
+    if ($request->filled('etat')) {
+        $query->where('etat', $request->etat);
+    }
+
+    // 🧠 Filtre par mode
+    if ($request->filled('mode')) {
+        $query->where('mode', $request->mode);
+    }
+
+    // Récupération avec pagination (ou ->get() si tu préfères)
+    $objets = $query->paginate(10);
+
+    return view('objets.index', compact('objets'));
+}
+
+
+    // Formulaire de création
     public function create()
     {
         return view('objets.create');
     }
 
-
-    // Méthode pour afficher la page d'accueil avec des objets filtrés
-
+    // Accueil filtré
     public function home(Request $request)
     {
         $search = $request->input('search');
-
-
-        // Filtrer les objets par nom si une recherche est faite
 
         $objets = ObjetIntellectuel::query()
             ->when($search, function ($query, $search) {
@@ -51,73 +56,142 @@ class ObjetIntellectuelController extends Controller
             })
             ->get();
 
-        // Retourner la vue d'accueil avec les objets filtrés
         return view('acceuil', compact('objets', 'search'));
     }
 
     // Méthode pour afficher les détails d'un objet
     public function show($id)
     {
-        // Trouver l'objet par son ID
         $objet = ObjetIntellectuel::findOrFail($id);
 
-        // Retourner la vue des détails de l'objet
-        return view('objets.show', compact('objet'));
+        // Récupérer les interactions associées à cet objet
+        $interactions = InteractionObjet::where('objet_intellectuel_id', $id)
+        ->orderBy('created_at', 'desc')
+        ->take(7)
+        ->get();
+
+
+        // Passer les données à la vue
+        return view('objets.show', compact('objet', 'interactions'));
     }
 
-    // Méthode pour enregistrer un objet dans la base de données
+    // Enregistrement d’un nouvel objet
     public function store(Request $request)
     {
-        // Validation des données
         $request->validate([
             'nom' => 'required',
             'etat_batterie' => 'nullable|integer',
-            // Ajoute d'autres règles de validation ici si nécessaire
         ]);
 
-        // Créer un nouvel objet dans la base de données
         ObjetIntellectuel::create($request->all());
-
-        // Rediriger vers la liste des objets avec un message de succès
-
-        return redirect()->route('objets.index')->with('success', 'L\'objet a bien été ajouté.');
+        return redirect()->route('objets.index')->with('success', 'Objet ajouté avec succès.');
     }
+
+    // 🔁 Bouton Allumer / Éteindre (tous types)
     public function toggleEtat($id)
-{
-    $objet = ObjetIntellectuel::findOrFail($id);
-    $objet->etat = $objet->etat === 'on' ? 'off' : 'on';
-    $objet->save();
-
-    return redirect()->back()->with('success', 'État modifié !');
-}
-
-public function changeVolume(Request $request, $id)
-{
-    $objet = ObjetIntellectuel::findOrFail($id);
-
-    if ($objet->type === 'TV') {
-        $request->validate([
-            'volume' => 'required|integer|min:0|max:100',
-        ]);
-        $objet->volume = $request->volume;
+    {
+        $objet = ObjetIntellectuel::findOrFail($id);
+        $objet->etat = $objet->etat === 'on' ? 'off' : 'on';
         $objet->save();
+
+        return redirect()->route('objets.show', $objet->id)->with('success', 'État modifié !');
     }
 
-    return redirect()->back()->with('success', 'Volume modifié !');
-}
-public function changeChaine(Request $request, $id)
-{
-    $objet = ObjetIntellectuel::findOrFail($id);
+    // 📺 TV
+    public function changeVolume(Request $request, $id)
+    {
+        $objet = ObjetIntellectuel::findOrFail($id);
 
-    if ($objet->type === 'TV') {
-        $request->validate([
-            'chaine' => 'required|string|max:100',
-        ]);
-        $objet->chaine_actuelle = $request->chaine;
-        $objet->save();
+        if ($objet->type === 'TV') {
+            $request->validate(['volume' => 'required|integer|min:0|max:100']);
+            $objet->volume = $request->volume;
+            $objet->save();
+        }
+
+        return redirect()->route('objets.show', $objet->id)->with('success', 'Volume modifié !');
     }
 
-    return redirect()->back()->with('success', 'Chaîne modifiée !');
-}
+    public function changeChaine(Request $request, $id)
+    {
+        $objet = ObjetIntellectuel::findOrFail($id);
 
+        if ($objet->type === 'TV') {
+            $request->validate(['chaine' => 'required|string|max:100']);
+            $objet->chaine_actuelle = $request->chaine;
+            $objet->save();
+        }
+
+        return redirect()->route('objets.show', $objet->id)->with('success', 'Chaîne modifiée !');
+    }
+
+    // 💡 Lampe
+    public function changeLuminosite(Request $request, $id)
+    {
+        $objet = ObjetIntellectuel::findOrFail($id);
+
+        if ($objet->type === 'Lampe') {
+            $request->validate(['luminosite' => 'required|integer|min:0|max:100']);
+            $objet->luminosite = $request->luminosite;
+            $objet->save();
+        }
+
+        return redirect()->route('objets.show', $objet->id)->with('success', 'Luminosité modifiée !');
+    }
+
+    public function changeCouleur(Request $request, $id)
+    {
+        $objet = ObjetIntellectuel::findOrFail($id);
+
+        if ($objet->type === 'Lampe') {
+            $request->validate(['couleur' => 'required|string|max:20']);
+            $objet->couleur = $request->couleur;
+            $objet->save();
+        }
+
+        return redirect()->route('objets.show', $objet->id)->with('success', 'Couleur modifiée !');
+    }
+
+    // 🌡️ Thermostat
+    public function changeTemperature(Request $request, $id)
+    {
+        $objet = ObjetIntellectuel::findOrFail($id);
+
+        if ($objet->type === 'Thermostat') {
+            $request->validate(['temperature' => 'required|numeric|min:5|max:35']);
+            $objet->temperature_cible = $request->temperature;
+            $objet->save();
+        }
+
+        return redirect()->route('objets.show', $objet->id)->with('success', 'Température modifiée !');
+    }
+
+    public function changeMode(Request $request, $id)
+    {
+        $objet = ObjetIntellectuel::findOrFail($id);
+
+        if ($objet->type === 'Thermostat') {
+            $request->validate(['mode' => 'required|string|in:off,eco,comfort']);
+            $objet->mode = $request->mode;
+            $objet->save();
+        }
+
+        return redirect()->route('objets.show', $objet->id)->with('success', 'Mode modifié !');
+    }
+
+    // 🪟 Store
+    public function changePosition(Request $request, $id)
+    {
+        $objet = ObjetIntellectuel::findOrFail($id);
+
+        if ($objet->type === 'Store électrique') {
+            $request->validate([
+                'position' => 'required|integer|min:0|max:100',
+            ]);
+
+            $objet->position = $request->position;
+            $objet->save();
+        }
+
+        return redirect()->route('objets.show', $objet->id)->with('success', 'Position modifiée !');
+    }
 }

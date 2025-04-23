@@ -2,64 +2,56 @@
 
 @section('content')
 <style>
-    .hero {
-        position: relative;
-        height: 100vh;
-        background-image: url('{{ asset("images/salon connecte.jpg") }}');
-        background-size: cover;
-        background-position: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        background-color: rgba(0, 0, 0, 0.6); /* Foncé pour contraste */
-        z-index: 1;
-    }
-
-    .hero-content {
-        position: relative;
-        z-index: 2;
-        color: white;
+    .hero-section {
+        background-color: #d1d9f8;
+        padding: 60px 20px;
         text-align: center;
-        max-width: 90%;
     }
 
-    .hero-content h1 {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        color: #a29bfe;
-        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+    .hero-section h1 {
+        font-size: 2.5rem;
+        color: #3490dc;
+        font-weight: 700;
+        margin-bottom: 10px;
     }
 
-    .hero-content p {
-        font-size: 1.3rem;
-        margin-bottom: 2rem;
-        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+    .hero-section p {
+        font-size: 1.2rem;
+        color: #333;
+        margin-bottom: 40px;
     }
 
-    .hero-content a {
-        padding: 1rem 2rem;
-        background-color: #ffffff;
-        color: #2d3436;
-        border-radius: 10px;
-        font-size: 1rem;
-        font-weight: bold;
+    .hero-image-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-image-container img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .hero-button {
+        margin-top: 30px;
+        padding: 12px 25px;
+        background-color: white;
+        border: 2px solid #3490dc;
+        color: #3490dc;
+        border-radius: 30px;
+        font-weight: 600;
         text-decoration: none;
-        border: 2px solid #a29bfe;
         transition: all 0.3s ease;
     }
 
-    .hero-content a:hover {
-        background-color: #a29bfe;
+    .hero-button:hover {
+        background-color: #3490dc;
         color: white;
     }
+
 
     /* Style des cartes */
     .card {
@@ -131,15 +123,18 @@
         padding: 15px;
     }
 
+
 </style>
 
-<div class="hero">
-    <div class="overlay"></div>
-    <div class="hero-content">
-        <h1>Bienvenue sur <span style="color: #6c5ce7;">SmartPlatform</span> 👋</h1>
-        <p>Gère ta maison connectée simplement, efficacement et avec style.</p>
-        <a href="{{ route('objets.index') }}">Découvrir mes objets</a>
+<div class="hero-section">
+    <h1>Bienvenue sur <span style="color:#6c5ce7;">SmartPlatform</span> 👋</h1>
+    <p>Gère ta maison connectée simplement, efficacement et avec style.</p>
+
+    <div class="hero-image-container">
+        <img src="{{ asset('images/salon connecte.jpg') }}" alt="Salon connecté">
     </div>
+
+    <a href="{{ route('objets.index') }}" class="hero-button">Voir les Objets Intellectuels</a>
 </div>
 
 <div class="container my-5">

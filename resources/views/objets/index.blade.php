@@ -2,14 +2,39 @@
 
 @section('content')
 <div class="container">
-    <h1>Objets Intellectuels (Salon)</h1>
+    <h1 style="text-align: center; color: #3490dc; margin-top: 30px;">Objets Intellectuels (Salon)</h1>
 
     <div class="search-bar">
-        <form method="GET" action="{{ route('objets.index') }}">
-            <input type="text" name="search" placeholder="Rechercher un objet..." value="{{ request('search') }}">
-            <button type="submit">🔍 Rechercher</button>
-        </form>
-    </div>
+    <form method="GET" action="{{ route('objets.index') }}" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center;">
+        <input type="text" name="search" placeholder="Recherche mots-clés..." value="{{ request('search') }}" style="padding: 8px; width: 200px;">
+
+        <select name="type" style="padding: 8px;">
+            <option value="">-- Type --</option>
+            <option value="TV" {{ request('type') == 'TV' ? 'selected' : '' }}>TV</option>
+            <option value="Thermostat" {{ request('type') == 'Thermostat' ? 'selected' : '' }}>Thermostat</option>
+            <option value="Lampe" {{ request('type') == 'Lampe' ? 'selected' : '' }}>Lampe</option>
+            <option value="Capteur de présence" {{ request('type') == 'Capteur de présence' ? 'selected' : '' }}>Capteur</option>
+            <option value="Store électrique" {{ request('type') == 'Store électrique' ? 'selected' : '' }}>Store</option>
+        </select>
+
+        <select name="etat" style="padding: 8px;">
+            <option value="">-- État --</option>
+            <option value="on" {{ request('etat') == 'on' ? 'selected' : '' }}>Connecté</option>
+            <option value="off" {{ request('etat') == 'off' ? 'selected' : '' }}>Déconnecté</option>
+        </select>
+
+        <select name="mode" style="padding: 8px;">
+            <option value="">-- Mode --</option>
+            <option value="eco" {{ request('mode') == 'eco' ? 'selected' : '' }}>Eco</option>
+            <option value="performance" {{ request('mode') == 'performance' ? 'selected' : '' }}>Performance</option>
+            <option value="confort" {{ request('mode') == 'confort' ? 'selected' : '' }}>Confort</option>
+            <option value="off" {{ request('mode') == 'off' ? 'selected' : '' }}>Off</option>
+        </select>
+
+        <button type="submit" class="nav-btn small">🔍 Rechercher</button>
+    </form>
+</div>
+
 
     @if(request('search'))
         <p style="text-align: center; margin-top: -20px; margin-bottom: 30px;">
@@ -19,39 +44,32 @@
 
     @forelse ($objets as $objet)
 
-        <div class="objet-card" style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 10px 0;">
-            <a href="{{ route('objets.show', $objet->id) }}" style="text-decoration: none; color: inherit;">
-                <h2>{{ $objet->nom }} ({{ $objet->type }})</h2>
-                <ul>
-                    @if($objet->type === 'thermostat')
-                        <li>🌡️ Température actuelle : {{ $objet->temperature_actuelle ?? 'Non renseignée' }}°C</li>
-                        <li>🎯 Température cible : {{ $objet->temperature_cible ?? 'Non renseignée' }}°C</li>
-                        <li>⚙️ Mode : {{ $objet->mode ?? 'Non renseigné' }}</li>
+        @php
+            $images = [
+                'tv' => 'TV.PNG',
+                'lampe' => 'Lampe.PNG',
+                'thermostat' => 'Thermostat.PNG',
+                'capteur de présence' => 'capteur de presence.PNG',
+                'store électrique' => 'Store electrique.PNG'
+            ];
+            $nomImage = $images[strtolower($objet->type)] ?? 'default.png';
+        @endphp
 
-                    @elseif($objet->type === 'lampe')
-                        <li>💡 État : {{ $objet->etat ?? 'Non renseigné' }}</li>
-                        <li>✨ Luminosité : {{ $objet->luminosite ?? 'Non renseignée' }}</li>
-                        <li>🎨 Couleur : {{ $objet->couleur ?? 'Non renseignée' }}</li>
+        <div class="objet-card" style="display: flex; align-items: center; gap: 20px;">
+            <img src="{{ asset('images/' . $nomImage) }}"
+                 alt="Image {{ $objet->type }}"
+                 style="width: 120px; height: 120px; object-fit: cover; border-radius: 10px;">
 
-                    @elseif($objet->type === 'tv')
-                        <li>📺 Chaîne actuelle : {{ $objet->chaine_actuelle ?? 'Non renseignée' }}</li>
-                        <li>🔊 Volume : {{ $objet->volume ?? 'Non renseigné' }}</li>
-
-                    @elseif($objet->type === 'capteur')
-                        <li>🕵️‍♂️ Présence détectée : {{ $objet->presence ? 'Oui' : 'Non' }}</li>
-                        <li>⏱️ Durée de présence : {{ $objet->duree_presence ?? 'Non renseignée' }} secondes</li>
-
-                    @elseif($objet->type === 'store')
-                        <li>📍 Position du store : {{ $objet->position ?? 'Non renseignée' }}%</li>
-                    @endif
-
-                    @if($objet->derniere_interaction)
-                        <li>⏰ Dernière interaction : {{ $objet->derniere_interaction }}</li>
-                    @endif
-                </ul>
-            </a>
-
+            <div>
+                <a href="{{ route('objets.show', $objet->id) }}" style="font-size: 1.2em; font-weight: bold; color: #3490dc;">
+                    {{ $objet->nom }} ({{ $objet->type }})
+                </a>
+                <p style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                    🕒 Dernière interaction : {{ $objet->derniere_interaction }}
+                </p>
+            </div>
         </div>
+
     @empty
         <div style="text-align: center;">
             <p>Aucun objet ne correspond à votre recherche.</p>
