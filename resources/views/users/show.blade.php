@@ -1,37 +1,104 @@
 @extends('layouts.app')
 
 @section('content')
-    <div style="max-width: 700px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px;">
-        <h2 style="text-align: center;">Profil de {{ $user->pseudo }}</h2>
+<style>
+    .profile-card {
+        max-width: 600px;
+        margin: 0 auto;
+        border-radius: 20px;
+        overflow: hidden;
+        background-color: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
 
-        <div style="text-align: center; margin-bottom: 20px;">
-            @if($user->photo)
-                <img src="{{ asset('storage/' . $user->photo) }}" alt="photo"
-                     style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
-            @else
-                <img src="{{ asset('images/default-avatar.png') }}" alt="avatar"
-                     style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
-            @endif
-        </div>
+    .profile-card .card-body {
+        padding: 30px;
+        text-align: center;
+    }
 
-        <ul style="list-style: none; padding: 0;">
-            @if($isAdmin)
-                <li><strong>Nom :</strong> {{ $user->name }}</li>
-                <li><strong>Prénom :</strong> {{ $user->prenom }}</li>
-            @endif
+    .profile-card img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
 
-            <li><strong>Âge :</strong> {{ $user->age }}</li>
-            <li><strong>Sexe :</strong> {{ $user->sexe }}</li>
-            <li><strong>Type de membre :</strong> {{ $user->type_membre }}</li>
-            <li><strong>Email :</strong> {{ $user->email }}</li>
+    .profile-card h4 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #2d3436;
+    }
 
-            @if($isAdmin)
-                <li><strong>Mot de passe hashé :</strong> {{ $user->password }}</li>
-            @endif
-        </ul>
+    .profile-card .badge {
+        font-size: 1rem;
+        padding: 10px 20px;
+        border-radius: 50px;
+        background-color: #6c5ce7;
+        color: white;
+        margin-bottom: 20px;
+    }
 
-        <div style="margin-top: 20px; text-align: center;">
-            <a href="{{ route('dashboard') }}" style="text-decoration: none; color: #3490dc;">⬅ Retour</a>
+    .profile-card .list-group-item {
+        font-size: 1.1rem;
+        color: #2d3436;
+        border: none;
+        padding: 12px 15px;
+        background-color: transparent;
+    }
+
+    .profile-card .list-group-item strong {
+        color: #6c5ce7;
+    }
+
+    .profile-card .btn {
+        font-size: 1.1rem;
+        padding: 12px 25px;
+        border-radius: 50px;
+        background-color: #6c5ce7;
+        color: white;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+
+    .profile-card .btn:hover {
+        background-color: #4e39b1;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="card mx-auto shadow profile-card">
+        <div class="card-body">
+            <div class="mb-3">
+                <img src="{{ $user->photo ? asset('storage/' . $user->photo) : asset('images/default-avatar.png') }}" 
+                     alt="Photo de {{ $user->pseudo }}" 
+                     class="rounded-circle shadow-sm">
+            </div>
+
+            <h4 class="card-title">{{ $user->pseudo }}</h4>
+            <span class="badge">{{ ucfirst($user->type_membre) }}</span>
+
+            <ul class="list-group list-group-flush text-start">
+                @if($isAdmin)
+                    <li class="list-group-item"><strong>Nom :</strong> {{ $user->name }}</li>
+                    <li class="list-group-item"><strong>Prénom :</strong> {{ $user->prenom }}</li>
+                @endif
+                <li class="list-group-item"><strong>Âge :</strong> {{ $user->age }} ans</li>
+                <li class="list-group-item"><strong>Date de naissance :</strong> {{ $user->date_naissance }}</li>
+                <li class="list-group-item"><strong>Sexe :</strong> {{ ucfirst($user->sexe) }}</li>
+                <li class="list-group-item"><strong>Email :</strong> {{ $user->email }}</li>
+
+                @if($isAdmin)
+                    <li class="list-group-item"><strong>Mot de passe (hash) :</strong> {{ $user->password }}</li>
+                @endif
+            </ul>
+
+            <div class="mt-4">
+                <a href="{{ route('home') }}" class="btn">⬅ Retour à l'accueil</a>
+            </div>
         </div>
     </div>
+</div>
 @endsection

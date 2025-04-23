@@ -12,7 +12,8 @@ use App\Http\Controllers\EmailAutoriseController;
 
 
 Route::get('/', function () {
-    return view('acceuil');  // Retourne uniquement la vue sans récupérer les utilisateurs ici
+    $users = User::all();
+    return view('acceuil', compact('users'));
 })->name('home');
 
 

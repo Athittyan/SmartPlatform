@@ -7,6 +7,10 @@
 
     <title>SmartPlatform</title>
 
+    <!-- ✅ Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-g3mSpCg1/3Ib7m60+1LpZRXwU1EJTDKbgZroQb1lUUVyscc7RAf9yZbq8FX5eb1Z" crossorigin="anonymous">
+
+
     <!-- ✅ Feuille de style personnalisée -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
