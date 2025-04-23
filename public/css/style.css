@@ -149,14 +149,6 @@ h2 {
     font-weight: bold;
 }
 
-/* Graphique consommation */
-#consumptionChart {
-    flex: 1;
-    max-width: 700px;
-    height: 350px;
-    margin: 0 auto;
-}
-
 .details-options-wrapper {
     display: flex;
     justify-content: space-between;
@@ -174,4 +166,16 @@ h2 {
     padding: 15px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#consumptionChart {
+    max-width: 800px;
+    height: 300px;
+    margin: 1rem auto;
+    display: block;
+}
+
+.download-pdf-btn {
+    text-align: center;
+    margin-top: 1rem;
 }

@@ -68,7 +68,7 @@
     <p>Gère ta maison connectée simplement, efficacement et avec style.</p>
 
     <div class="hero-image-container">
-        <img src="{{ asset('storage/images/salon_connecte.jpg') }}" alt="Salon connecté">
+        <img src="{{ asset('images/salon connecte.jpg') }}" alt="Salon connecté">
     </div>
 
     <a href="{{ route('objets.index') }}" class="hero-button">Voir les Objets Intellectuels</a>

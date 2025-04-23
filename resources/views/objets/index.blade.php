@@ -5,11 +5,36 @@
     <h1 style="text-align: center; color: #3490dc; margin-top: 30px;">Objets Intellectuels (Salon)</h1>
 
     <div class="search-bar">
-        <form method="GET" action="{{ route('objets.index') }}">
-            <input type="text" name="search" placeholder="Rechercher un objet..." value="{{ request('search') }}">
-            <button type="submit">🔍 Rechercher</button>
-        </form>
-    </div>
+    <form method="GET" action="{{ route('objets.index') }}" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center;">
+        <input type="text" name="search" placeholder="Recherche mots-clés..." value="{{ request('search') }}" style="padding: 8px; width: 200px;">
+
+        <select name="type" style="padding: 8px;">
+            <option value="">-- Type --</option>
+            <option value="TV" {{ request('type') == 'TV' ? 'selected' : '' }}>TV</option>
+            <option value="Thermostat" {{ request('type') == 'Thermostat' ? 'selected' : '' }}>Thermostat</option>
+            <option value="Lampe" {{ request('type') == 'Lampe' ? 'selected' : '' }}>Lampe</option>
+            <option value="Capteur de présence" {{ request('type') == 'Capteur de présence' ? 'selected' : '' }}>Capteur</option>
+            <option value="Store électrique" {{ request('type') == 'Store électrique' ? 'selected' : '' }}>Store</option>
+        </select>
+
+        <select name="etat" style="padding: 8px;">
+            <option value="">-- État --</option>
+            <option value="on" {{ request('etat') == 'on' ? 'selected' : '' }}>Connecté</option>
+            <option value="off" {{ request('etat') == 'off' ? 'selected' : '' }}>Déconnecté</option>
+        </select>
+
+        <select name="mode" style="padding: 8px;">
+            <option value="">-- Mode --</option>
+            <option value="eco" {{ request('mode') == 'eco' ? 'selected' : '' }}>Eco</option>
+            <option value="performance" {{ request('mode') == 'performance' ? 'selected' : '' }}>Performance</option>
+            <option value="confort" {{ request('mode') == 'confort' ? 'selected' : '' }}>Confort</option>
+            <option value="off" {{ request('mode') == 'off' ? 'selected' : '' }}>Off</option>
+        </select>
+
+        <button type="submit" class="nav-btn small">🔍 Rechercher</button>
+    </form>
+</div>
+
 
     @if(request('search'))
         <p style="text-align: center; margin-top: -20px; margin-bottom: 30px;">

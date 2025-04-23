@@ -14,7 +14,7 @@
             @if($objet->type === 'Thermostat')
                 <p><strong>Température actuelle:</strong> {{ $objet->temperature_actuelle }}°C</p>
                 <p><strong>Température cible:</strong> {{ $objet->temperature_cible }}°C</p>
-            @endif
+            @endif 
 
             @if($objet->mode)
                 <p><strong>Mode:</strong> {{ $objet->mode }}</p>
@@ -134,93 +134,97 @@
 </div>
 
     
-
-@if($interactions->count())
-    <h2 class="section-title">📜 Historique des interactions</h2>
-
-    <div class="interactions-wrapper">
-        {{-- 🧾 Tableau d'historique --}}
-        <table class="interactions-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Action</th>
-                    <th>Valeurs avant</th>
-                    <th>Valeurs après</th>
-                    <th>Conso énergie (W)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($interactions as $interaction)
-                    @php
-                        $valeursAvant = json_decode($interaction->valeurs_avant, true) ?? [];
-                        $valeursApres = json_decode($interaction->valeurs_apres, true) ?? [];
-                        $action = strtolower($interaction->action);
-                    @endphp
+    {{-- INTERACTIONS TV --}}
+    @if($objet->type === 'TV' && $interactions->count())
+        <h2 class="section-title">📺 Historique des interactions (TV)</h2>
+        <div class="interactions-wrapper">
+            <table class="interactions-table">
+                <thead>
                     <tr>
-                        <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
-                        <td>{{ ucfirst($interaction->action) }}</td>
-
-                        <td>
-                            @switch($action)
-                                @case('allumé')
-                                @case('éteint')
-                                    État: {{ $valeursAvant['etat'] ?? '—' }}
-                                    @break
-
-                                @case('volume changé')
-                                    Volume: {{ $valeursAvant['volume'] ?? '—' }}
-                                    @break
-
-                                @case('chaîne modifiée')
-                                    Chaîne: {{ $valeursAvant['chaine_actuelle'] ?? '—' }}
-                                    @break
-
-                                @default
-                                    —
-                            @endswitch
-                        </td>
-
-                        <td>
-                            @switch($action)
-                                @case('allumé')
-                                @case('éteint')
-                                    État: {{ $valeursApres['etat'] ?? '—' }}
-                                    @break
-
-                                @case('volume changé')
-                                    Volume: {{ $valeursApres['volume'] ?? '—' }}
-                                    @break
-
-                                @case('chaîne modifiée')
-                                    Chaîne: {{ $valeursApres['chaine_actuelle'] ?? '—' }}
-                                    @break
-
-                                @default
-                                    —
-                            @endswitch
-                        </td>
-
-                        <td>{{ $interaction->consommation_energie ?? '—' }}</td>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Valeurs avant</th>
+                        <th>Valeurs après</th>
+                        <th>Conso énergie (W)</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach ($interactions as $interaction)
+                        @php
+                            $avant = json_decode($interaction->valeurs_avant, true) ?? [];
+                            $apres = json_decode($interaction->valeurs_apres, true) ?? [];
+                        @endphp
+                        <tr>
+                            <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
+                            <td>{{ ucfirst($interaction->action) }}</td>
+                            <td>
+                                @if(isset($avant['etat'])) État : {{ $avant['etat'] }}<br>@endif
+                                @if(isset($avant['volume'])) Volume : {{ $avant['volume'] }}<br>@endif
+                                @if(isset($avant['chaine_actuelle'])) Chaîne : {{ $avant['chaine_actuelle'] }}@endif
+                            </td>
+                            <td>
+                                @if(isset($apres['etat'])) État : {{ $apres['etat'] }}<br>@endif
+                                @if(isset($apres['volume'])) Volume : {{ $apres['volume'] }}<br>@endif
+                                @if(isset($apres['chaine_actuelle'])) Chaîne : {{ $apres['chaine_actuelle'] }}@endif
+                            </td>
+                            <td>{{ $interaction->consommation_energie ?? '—' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-        {{-- 📈 Courbe Chart.js --}}
-        <canvas id="consumptionChart"></canvas>
-    </div>
-@endif
+            <canvas id="tvChart"></canvas>
+        </div>
+    @endif
 
+    {{-- INTERACTIONS LAMPE --}}
+    @if($objet->type === 'Lampe' && $interactions->count())
+        <h2 class="section-title">💡 Historique des interactions (Lampe)</h2>
+        <div class="interactions-wrapper">
+            <table class="interactions-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Avant</th>
+                        <th>Après</th>
+                        <th>Conso énergie (W)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($interactions as $interaction)
+                        @php
+                            $avant = json_decode($interaction->valeurs_avant, true) ?? [];
+                            $apres = json_decode($interaction->valeurs_apres, true) ?? [];
+                        @endphp
+                        <tr>
+                            <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
+                            <td>{{ ucfirst($interaction->action) }}</td>
+                            <td>
+                                @if(isset($avant['etat'])) État : {{ $avant['etat'] }}<br>@endif
+                                @if(isset($avant['luminosite'])) Luminosité : {{ $avant['luminosite'] }}%<br>@endif
+                                @if(isset($avant['couleur'])) Couleur : {{ $avant['couleur'] }}@endif
+                            </td>
+                            <td>
+                                @if(isset($apres['etat'])) État : {{ $apres['etat'] }}<br>@endif
+                                @if(isset($apres['luminosite'])) Luminosité : {{ $apres['luminosite'] }}%<br>@endif
+                                @if(isset($apres['couleur'])) Couleur : {{ $apres['couleur'] }}@endif
+                            </td>
+                            <td>{{ $interaction->consommation_energie ?? '—' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-
-{{-- 📊 Courbe --}}
-<canvas id="consumptionChart" width="600" height="100"></canvas>
-
+            <canvas id="lampChart"></canvas>
+        </div>
+    @endif
+    @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+@if($objet->type === 'TV')
 <script>
-    const ctx = document.getElementById('consumptionChart').getContext('2d');
-    new Chart(ctx, {
+    new Chart(document.getElementById('tvChart'), {
         type: 'line',
         data: {
             labels: {!! json_encode($interactions->pluck('created_at')->map->format('d/m/Y H:i')) !!},
@@ -234,6 +238,48 @@
         }
     });
 </script>
+@endif
+
+@if($objet->type === 'Lampe')
+<script>
+    new Chart(document.getElementById('lampChart'), {
+        type: 'line',
+        data: {
+            labels: {!! json_encode($interactions->pluck('created_at')->map->format('d/m/Y H:i')) !!},
+            datasets: [{
+                label: 'Consommation énergie (W)',
+                data: {!! json_encode($interactions->pluck('consommation_energie')) !!},
+                borderColor: 'rgba(255, 193, 7, 1)',
+                tension: 0.3,
+                fill: false
+            }]
+        }
+    });
+</script>
+@endif
+
+@if($objet->type === 'Thermostat')
+<script>
+    new Chart(document.getElementById('thermostatChart'), {
+        type: 'line',
+        data: {
+            labels: {!! json_encode($interactions->pluck('created_at')->map->format('d/m/Y H:i')) !!},
+            datasets: [{
+                label: 'Température cible (°C)',
+                data: {!! json_encode($interactions->map(function ($item) {
+                    $after = json_decode($item->valeurs_apres, true) ?? [];
+                    return $after['temperature_cible'] ?? null;
+                })) !!},
+                borderColor: 'rgba(255, 99, 132, 1)',
+                tension: 0.3,
+                fill: false
+            }]
+        }
+    });
+</script>
+@endif
+@endsection
+
 
 <style>
     .box {
@@ -261,3 +307,5 @@
         }
     }
 </script>
+
+

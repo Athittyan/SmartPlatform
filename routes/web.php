@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmailAutoriseController;
+use App\Http\Controllers\PdfController;
 
 // Page d’accueil
 Route::get('/', function () {
@@ -65,6 +66,9 @@ Route::post('/objets/{id}/change-mode', [ObjetIntellectuelController::class, 'ch
 
 // Store
 Route::post('/objets/{id}/change-position', [ObjetIntellectuelController::class, 'changePosition'])->name('objets.changePosition');
+
+//Pdf
+Route::get('/objets/{id}/rapport', [PdfController::class, 'generate'])->name('objets.pdf');
 
 // Auth routes (register, login...)
 require __DIR__.'/auth.php';

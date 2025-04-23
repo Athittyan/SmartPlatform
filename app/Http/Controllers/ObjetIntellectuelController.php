@@ -8,18 +8,36 @@ use Illuminate\Http\Request;
 
 class ObjetIntellectuelController extends Controller
 {
-    // Afficher la liste des objets
     public function index(Request $request)
-    {
-        $query = ObjetIntellectuel::query();
+{
+    $query = ObjetIntellectuel::query();
 
-        if ($request->has('search')) {
-            $query->where('nom', 'like', '%' . $request->search . '%');
-        }
-
-        $objets = $query->get();
-        return view('objets.index', compact('objets'));
+    // 🔍 Recherche mots-clés (nom + description)
+    if ($request->filled('search')) {
+        $query->where('nom', 'like', '%' . $request->search . '%');
     }
+
+    // 🎛️ Filtre par type
+    if ($request->filled('type')) {
+        $query->where('type', $request->type);
+    }
+
+    // ⚡ Filtre par état
+    if ($request->filled('etat')) {
+        $query->where('etat', $request->etat);
+    }
+
+    // 🧠 Filtre par mode
+    if ($request->filled('mode')) {
+        $query->where('mode', $request->mode);
+    }
+
+    // Récupération avec pagination (ou ->get() si tu préfères)
+    $objets = $query->paginate(10);
+
+    return view('objets.index', compact('objets'));
+}
+
 
     // Formulaire de création
     public function create()
@@ -42,22 +60,20 @@ class ObjetIntellectuelController extends Controller
     }
 
     // Méthode pour afficher les détails d'un objet
-public function show($id)
-{
-    $objet = ObjetIntellectuel::findOrFail($id);
+    public function show($id)
+    {
+        $objet = ObjetIntellectuel::findOrFail($id);
 
-    // Récupérer les interactions associées à cet objet
-    $interactions = InteractionObjet::where('objet_intellectuel_id', $id)
-    ->orderBy('created_at', 'desc')
-    ->take(7)
-    ->get();
-
-
-    // Passer les données à la vue
-    return view('objets.show', compact('objet', 'interactions'));
-}
+        // Récupérer les interactions associées à cet objet
+        $interactions = InteractionObjet::where('objet_intellectuel_id', $id)
+        ->orderBy('created_at', 'desc')
+        ->take(7)
+        ->get();
 
 
+        // Passer les données à la vue
+        return view('objets.show', compact('objet', 'interactions'));
+    }
 
     // Enregistrement d’un nouvel objet
     public function store(Request $request)
