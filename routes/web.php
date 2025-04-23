@@ -68,7 +68,11 @@ Route::post('/objets/{id}/change-mode', [ObjetIntellectuelController::class, 'ch
 Route::post('/objets/{id}/change-position', [ObjetIntellectuelController::class, 'changePosition'])->name('objets.changePosition');
 
 //Pdf
-Route::get('/objets/{id}/rapport', [PdfController::class, 'generate'])->name('objets.pdf');
+Route::post('/objets/{id}/pdf', [PdfController::class, 'generate'])->name('objets.pdf');
+
+
+
+
 
 // Auth routes (register, login...)
 require __DIR__.'/auth.php';

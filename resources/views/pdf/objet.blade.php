@@ -53,5 +53,13 @@
             @endforeach
         </tbody>
     </table>
+
+    @if(!empty($chartImage))
+        <h2 style="margin-top: 30px;">📈 Graphique de consommation</h2>
+        <img src="{{ $chartImage }}" style="max-width: 100%; height: auto;">
+    @else
+        <p>Aucune image de graphique fournie.</p>
+    @endif
+
 </body>
 </html>

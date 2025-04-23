@@ -219,6 +219,93 @@
             <canvas id="lampChart"></canvas>
         </div>
     @endif
+
+    @if($objet->type === 'Thermostat' && $interactions->count())
+    <h2 class="section-title">🌡️ Historique des interactions (Thermostat)</h2>
+
+    <div class="interactions-wrapper">
+        <table class="interactions-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th>Avant</th>
+                    <th>Après</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($interactions as $interaction)
+                    @php
+                        $avant = json_decode($interaction->valeurs_avant, true) ?? [];
+                        $apres = json_decode($interaction->valeurs_apres, true) ?? [];
+                    @endphp
+                    <tr>
+                        <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
+                        <td>{{ ucfirst($interaction->action) }}</td>
+                        <td>
+                            @if(isset($avant['etat'])) État : {{ $avant['etat'] }}<br> @endif
+                            @if(isset($avant['temperature_cible'])) Température cible : {{ $avant['temperature_cible'] }}°C @endif
+                        </td>
+                        <td>
+                            @if(isset($apres['etat'])) État : {{ $apres['etat'] }}<br> @endif
+                            @if(isset($apres['temperature_cible'])) Température cible : {{ $apres['temperature_cible'] }}°C @endif
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <canvas id="thermostatChart"></canvas>
+    </div>
+@endif
+
+
+    @if($objet->type === 'Store électrique' && $interactions->count())
+        <h2 class="section-title">🪟 Historique des interactions (Store)</h2>
+
+        <div class="interactions-wrapper">
+            <table class="interactions-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Avant</th>
+                        <th>Après</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($interactions as $interaction)
+                        @php
+                            $avant = json_decode($interaction->valeurs_avant, true) ?? [];
+                            $apres = json_decode($interaction->valeurs_apres, true) ?? [];
+                        @endphp
+                        <tr>
+                            <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
+                            <td>{{ ucfirst($interaction->action) }}</td>
+                            <td>
+                                @if(isset($avant['position']))
+                                    Position : {{ $avant['position'] }}%
+                                @else
+                                    —
+                                @endif
+                            </td>
+                            <td>
+                                @if(isset($apres['position']))
+                                    Position : {{ $apres['position'] }}%
+                                @else
+                                    —
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <canvas id="storeChart"></canvas>
+        </div>
+    @endif
+
+
     @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -271,6 +358,47 @@
                     return $after['temperature_cible'] ?? null;
                 })) !!},
                 borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                tension: 0.3,
+                fill: true,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Température (°C)'
+                    },
+                    beginAtZero: false
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date / Heure'
+                    }
+                }
+            }
+        }
+    });
+</script>
+@endif
+
+@if($objet->type === 'Store électrique')
+<script>
+    new Chart(document.getElementById('storeChart'), {
+        type: 'line',
+        data: {
+            labels: {!! json_encode($interactions->pluck('created_at')->map->format('d/m/Y H:i')) !!},
+            datasets: [{
+                label: 'Position du store (%)',
+                data: {!! json_encode($interactions->map(function ($item) {
+                    $after = json_decode($item->valeurs_apres, true) ?? [];
+                    return $after['position'] ?? null;
+                })) !!},
+                borderColor: 'rgba(153, 102, 255, 1)',
                 tension: 0.3,
                 fill: false
             }]
@@ -278,6 +406,7 @@
     });
 </script>
 @endif
+
 @endsection
 
 
@@ -294,8 +423,36 @@
         background: #eee;
         border-radius: 5px;
     }
+
+    canvas {
+    max-width: 600px;
+    height: 250px !important;
+    margin: 2rem auto;
+    display: block;
+}   
 </style>
+
+<div class="download-pdf-btn" style="text-align: center; margin-top: 2rem;">
+    <form id="pdfForm" action="{{ route('objets.pdf', $objet->id) }}" method="POST">
+        @csrf
+        <input type="hidden" name="chart_image" id="chartImageInput">
+        <button type="submit" class="nav-btn">📄 Générer le rapport PDF</button>
+    </form>
+</div>
+
+
+<script>
+    document.getElementById('pdfForm').addEventListener('submit', function (e) {
+        const canvas = document.querySelector('canvas');
+        if (canvas) {
+            const imageData = canvas.toDataURL('image/png');
+            document.getElementById('chartImageInput').value = imageData;
+        }
+    });
+</script>
+
 @endsection
+
 
 <script>
     function toggleOptions(id) {
