@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\EmailAutorise;
+use App\Models\Level;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,10 +36,15 @@ class RegisteredUserController extends Controller
             ])->withInput();
         }
 
+        //Récupère dynamiquement l'Id du niveau "Débutant"
+        $levelId = Level::where('name', 'Débutant')->first()->id;
+        
+        //Crée l'utilisateur avec le niveau par défaut
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'level_id' => $levelId,
         ]);
 
         event(new Registered($user));

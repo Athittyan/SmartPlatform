@@ -28,6 +28,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = Auth::user(); // Ajout des points et mise à jour du niveau
+        
+        //Vérifie si user est connecté
+        if($user){
+            $user->addPoints(0.25); //Ajoute 0.25 points à chaque connexion
+            $user->changeLevel(); //Met à jour le niveau si les points le permettent
+        }
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

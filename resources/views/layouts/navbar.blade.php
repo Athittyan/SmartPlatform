@@ -22,6 +22,11 @@
                 <div style="display: flex; flex-direction: column; align-items: flex-start;">
                     <span style="font-weight: bold;">{{ auth()->user()->prenom }}</span>
 
+                    <span style="font-size: 0.9em; color: #555;">
+                        Niveau : <strong>{{ auth()->user()->level->name ?? 'Non défini' }}</strong> |
+                        Points : <strong>{{ auth()->user()->points }}</strong>
+                    </span>
+
                     <div style="display: flex; gap: 10px; margin-top: 4px;">
                         <a href="{{ route('profile.edit') }}" class="nav-btn small">Modifier profil</a>
                         <form action="{{ route('logout') }}" method="POST" style="display: inline;">

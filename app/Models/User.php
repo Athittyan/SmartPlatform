@@ -22,12 +22,13 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
-
         'pseudo',        // Ajouter 'pseudo' ici
         'age',           // Ajouter 'age' ici
         'sexe',          // Ajouter 'sexe' ici
         'type_membre',   // Ajouter 'type_membre' ici
         'photo',         // Ajouter 'photo' ici
+        'points',
+        'level_id',
     ];
 
     /**
@@ -54,5 +55,25 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function level()
+    {
+        return $this->belongsTo(Level::class);
+    }
+
+    public function addPoints(float $points)
+    {
+        $this->points += $points;
+        $this->save();
+    }
+
+    public function changeLevel()
+    {
+        $level = Level::where('cost', '<=', $this->points)->orderBy('cost', 'desc')->first();
+        if ($level) {
+            $this->level_id = $level->id;
+            $this->save();
+        }
     }
 }
