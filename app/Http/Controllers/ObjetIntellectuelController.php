@@ -9,43 +9,39 @@ use Illuminate\Http\Request;
 class ObjetIntellectuelController extends Controller
 {
     public function index(Request $request)
-{
-    $query = ObjetIntellectuel::query();
+    {
+        $query = ObjetIntellectuel::query();
 
-    // 🔍 Recherche mots-clés (nom + description)
-    if ($request->filled('search')) {
-        $query->where('nom', 'like', '%' . $request->search . '%');
+        // Recherche mots-clés (nom)
+        if ($request->filled('search')) {
+            $query->where('nom', 'like', '%' . $request->search . '%');
+        }
+
+        // Filtre par type
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Filtre par état
+        if ($request->filled('etat')) {
+            $query->where('etat', $request->etat);
+        }
+
+        // Filtre par mode
+        if ($request->filled('mode')) {
+            $query->where('mode', $request->mode);
+        }
+
+        $objets = $query->paginate(10);
+
+        return view('objets.index', compact('objets'));
     }
 
-    // 🎛️ Filtre par type
-    if ($request->filled('type')) {
-        $query->where('type', $request->type);
-    }
-
-    // ⚡ Filtre par état
-    if ($request->filled('etat')) {
-        $query->where('etat', $request->etat);
-    }
-
-    // 🧠 Filtre par mode
-    if ($request->filled('mode')) {
-        $query->where('mode', $request->mode);
-    }
-
-    // Récupération avec pagination (ou ->get() si tu préfères)
-    $objets = $query->paginate(10);
-
-    return view('objets.index', compact('objets'));
-}
-
-
-    // Formulaire de création
     public function create()
     {
         return view('objets.create');
     }
 
-    // Accueil filtré
     public function home(Request $request)
     {
         $search = $request->input('search');
@@ -59,7 +55,6 @@ class ObjetIntellectuelController extends Controller
         return view('acceuil', compact('objets', 'search'));
     }
 
-    // Méthode pour afficher les détails d'un objet
     public function show($id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
@@ -70,33 +65,33 @@ class ObjetIntellectuelController extends Controller
         $now = now();
 
         $viewedObjets = collect($viewedObjets)
-            ->filter(function($timestamp) use ($now) {
+            ->filter(function ($timestamp) use ($now) {
                 return \Carbon\Carbon::parse($timestamp)->diffInHours($now) < 24;
             })
             ->toArray();
-        
-        //Vérifie si l'objet a déjà été consulté il y a moins d'une heure
-        $lastViewed = isset($viewedObjts[$id]) ? \Carbon\Carbon::parse($viewedObjets[$id]) : null;
+
+        $lastViewed = isset($viewedObjets[$id]) ? \Carbon\Carbon::parse($viewedObjets[$id]) : null;
 
         if ($user && (!$lastViewed || $lastViewed->diffInMinutes($now) >= 60)) {
-            $user->addPoints(0.5);         // ajoute 0.5 point
-            $user->changeLevel();          // vérifie si changement de niveau
-            $viewedObjets[$id] = $now->toDateTimeString(); // met à jour la session
+            $user->addPoints(0.5);
+            $user->changeLevel();
+            $viewedObjets[$id] = $now->toDateTimeString();
             session()->put($sessionKey, $viewedObjets);
         }
 
-        // Récupérer les interactions associées à cet objet
         $interactions = InteractionObjet::where('objet_intellectuel_id', $id)
-        ->orderBy('created_at', 'desc')
-        ->take(7)
-        ->get();
+            ->orderBy('created_at', 'desc')
+            ->take(7)
+            ->get();
+
+        // Calculer si c'est un visiteur
+       // Calculer si c'est un visiteur ou un utilisateur simple
+$isVisiteur = auth()->guest() || (auth()->check() && (auth()->user()->role === 'visiteur' || auth()->user()->role === 'simple'));
 
 
-        // Passer les données à la vue
-        return view('objets.show', compact('objet', 'interactions'));
+        return view('objets.show', compact('objet', 'interactions', 'isVisiteur'));
     }
 
-    // Enregistrement d’un nouvel objet
     public function store(Request $request)
     {
         $request->validate([
@@ -108,7 +103,6 @@ class ObjetIntellectuelController extends Controller
         return redirect()->route('objets.index')->with('success', 'Objet ajouté avec succès.');
     }
 
-    // 🔁 Bouton Allumer / Éteindre (tous types)
     public function toggleEtat($id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
@@ -118,7 +112,6 @@ class ObjetIntellectuelController extends Controller
         return redirect()->route('objets.show', $objet->id)->with('success', 'État modifié !');
     }
 
-    // 📺 TV
     public function changeVolume(Request $request, $id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
@@ -145,7 +138,6 @@ class ObjetIntellectuelController extends Controller
         return redirect()->route('objets.show', $objet->id)->with('success', 'Chaîne modifiée !');
     }
 
-    // 💡 Lampe
     public function changeLuminosite(Request $request, $id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
@@ -172,7 +164,6 @@ class ObjetIntellectuelController extends Controller
         return redirect()->route('objets.show', $objet->id)->with('success', 'Couleur modifiée !');
     }
 
-    // 🌡️ Thermostat
     public function changeTemperature(Request $request, $id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
@@ -199,16 +190,12 @@ class ObjetIntellectuelController extends Controller
         return redirect()->route('objets.show', $objet->id)->with('success', 'Mode modifié !');
     }
 
-    // 🪟 Store
     public function changePosition(Request $request, $id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
 
         if ($objet->type === 'Store électrique') {
-            $request->validate([
-                'position' => 'required|integer|min:0|max:100',
-            ]);
-
+            $request->validate(['position' => 'required|integer|min:0|max:100']);
             $objet->position = $request->position;
             $objet->save();
         }

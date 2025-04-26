@@ -4,16 +4,18 @@
         <a href="{{ route('home') }}" class="nav-btn">Accueil</a>
 
         @auth
-            @if(Auth::user()->role === 'admin')
+            @if(Auth::user()->role === 'expert' || Auth::user()->role === 'complexe')
                 <a href="{{ route('objets.create') }}" class="nav-btn">+ Ajouter un objet</a>
-                <a href="{{ route('admin.emails.index') }}" class="nav-btn">👥 Gérer la famille</a>
+            @endif
+
+            @if(Auth::user()->role === 'expert')
+                <a href="{{ route('admin.index') }}" class="nav-btn">👥 Gérer la famille</a>
             @endif
         @endauth
     </div>
 
-    @auth
-        <div style="display: flex; align-items: center; gap: 15px;">
-            {{-- Colonne utilisateur --}}
+    <div style="display: flex; align-items: center; gap: 15px;">
+        @auth
             <div style="display: flex; align-items: center; gap: 15px;">
                 <img src="{{ auth()->user()->photo ? asset('storage/' . auth()->user()->photo) : asset('images/default-avatar.png') }}"
                      alt="Avatar"
@@ -36,11 +38,11 @@
                     </div>
                 </div>
             </div>
-        </div>
-    @else
-        <div style="display: flex; gap: 10px;">
-            <a href="{{ route('login') }}" class="nav-btn">Connexion</a>
-            <a href="{{ route('register') }}" class="nav-btn">Inscription</a>
-        </div>
-    @endauth
+        @else
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ route('login') }}" class="nav-btn">Connexion</a>
+                <a href="{{ route('register') }}" class="nav-btn">Inscription</a>
+            </div>
+        @endauth
+    </div>
 </nav>

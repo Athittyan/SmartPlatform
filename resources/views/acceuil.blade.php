@@ -137,6 +137,7 @@
     <a href="{{ route('objets.index') }}" class="hero-button">Voir les Objets Intellectuels</a>
 </div>
 
+@if(Auth::check() && Auth::user()->role !== 'visiteur')
 <div class="container my-5">
     <h2 class="text-center mb-4" style="color: #6c5ce7;">Membres de la famille 👨‍👩‍👧‍👦</h2>
 
@@ -146,7 +147,7 @@
             <!-- Carte entière cliquable -->
             <a href="{{ route('users.show', $user->id) }}" class="card shadow text-decoration-none">
                 <div class="card-body d-flex flex-column align-items-center">
-                    <img src="{{ asset('storage/' . $user->photo) }}" class="profile-pic mb-3 " alt="photo de {{ $user->pseudo }}">
+                    <img src="{{ asset('storage/' . $user->photo) }}" class="profile-pic mb-3" alt="photo de {{ $user->pseudo }}">
                     <h5 class="card-title">{{ $user->pseudo }}</h5>
                 </div>
             </a>
@@ -154,5 +155,7 @@
         @endforeach
     </div>
 </div>
+@endif
+
 
 @endsection
