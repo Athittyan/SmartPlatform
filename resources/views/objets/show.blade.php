@@ -49,7 +49,7 @@
             @endif
 
         </div>
-
+        @if(auth()->user() && in_array(auth()->user()->role, ['complexe', 'admin']))
         <div class="options-all">
             {{-- 📺 OPTIONS TV --}}
             @if($objet->type === 'TV')
@@ -128,12 +128,13 @@
                 </div>
             @endif
         </div>
+        @endif
     </div>
     
     <a href="{{ route('objets.index') }}" class="nav-btn" style="margin-top: 1rem; display: inline-block;">Retour à la liste</a>
 </div>
 
-    
+@if(auth()->user() && in_array(auth()->user()->role, ['complexe', 'admin']))
     {{-- INTERACTIONS TV --}}
     @if($objet->type === 'TV' && $interactions->count())
         <h2 class="section-title">📺 Historique des interactions (TV)</h2>
@@ -257,7 +258,7 @@
 
         <canvas id="thermostatChart"></canvas>
     </div>
-@endif
+    @endif
 
 
     @if($objet->type === 'Store électrique' && $interactions->count())
@@ -304,9 +305,9 @@
             <canvas id="storeChart"></canvas>
         </div>
     @endif
+@endif
 
-
-    @section('scripts')
+@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 @if($objet->type === 'TV')
@@ -431,7 +432,7 @@
     display: block;
 }   
 </style>
-
+@if(auth()->user() && in_array(auth()->user()->role, ['complexe', 'admin']))
 <div class="download-pdf-btn" style="text-align: center; margin-top: 2rem;">
     <form id="pdfForm" action="{{ route('objets.pdf', $objet->id) }}" method="POST">
         @csrf
@@ -439,7 +440,7 @@
         <button type="submit" class="nav-btn">📄 Générer le rapport PDF</button>
     </form>
 </div>
-
+@endif
 
 <script>
     document.getElementById('pdfForm').addEventListener('submit', function (e) {
@@ -464,5 +465,3 @@
         }
     }
 </script>
-
-

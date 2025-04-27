@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmailAutoriseController;
 use App\Http\Controllers\PdfController;
 
+
 // Page d’accueil
 Route::get('/', function () {
     $users = User::all();
@@ -72,8 +73,12 @@ Route::post('/objets/{id}/change-position', [ObjetIntellectuelController::class,
 //Pdf
 Route::post('/objets/{id}/pdf', [PdfController::class, 'generate'])->name('objets.pdf');
 
+// Routes pour l'admin uniquement
+Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 
-
+Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
 
 
 // Auth routes (register, login...)

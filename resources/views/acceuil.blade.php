@@ -138,6 +138,7 @@
 </div>
 
 <div class="container my-5">
+@auth
     <h2 class="text-center mb-4" style="color: #6c5ce7;">Membres de la famille 👨‍👩‍👧‍👦</h2>
 
     <div class="row justify-content-center">
@@ -153,6 +154,7 @@
         </div>
         @endforeach
     </div>
+@endauth
 </div>
 
 @endsection

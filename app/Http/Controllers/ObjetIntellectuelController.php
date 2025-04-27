@@ -96,17 +96,40 @@ class ObjetIntellectuelController extends Controller
         return view('objets.show', compact('objet', 'interactions'));
     }
 
-    // Enregistrement d’un nouvel objet
     public function store(Request $request)
     {
-        $request->validate([
-            'nom' => 'required',
-            'etat_batterie' => 'nullable|integer',
-        ]);
+    $validated = $request->validate([
+        'identifiant' => 'nullable|string|unique:objets_intellectuels,identifiant',
+        'nom' => 'required|string|max:255',
+        'type' => 'required|string',
+    ]);
 
-        ObjetIntellectuel::create($request->all());
-        return redirect()->route('objets.index')->with('success', 'Objet ajouté avec succès.');
+    // SI identifiant vide, on en génère un automatique
+    if (empty($validated['identifiant'])) {
+        $validated['identifiant'] = strtolower($validated['type']) . '-' . now()->format('YmdHis');
     }
+
+    ObjetIntellectuel::create([
+        'identifiant' => $validated['identifiant'],
+        'nom' => $validated['nom'],
+        'type' => $validated['type'],
+        'temperature_actuelle' => $request->temperature_actuelle,
+        'temperature_cible' => $request->temperature_cible,
+        'mode' => $request->mode,
+        'etat' => $request->etat,
+        'luminosite' => $request->luminosite,
+        'couleur' => $request->couleur,
+        'chaine_actuelle' => $request->chaine_actuelle,
+        'volume' => $request->volume,
+        'presence' => $request->presence,
+        'duree_presence' => $request->duree_presence,
+        'position' => $request->position,
+        'derniere_interaction' => $request->derniere_interaction,
+    ]);
+
+    return redirect()->route('objets.index')->with('success', 'Objet ajouté avec succès.');
+    }
+
 
     // 🔁 Bouton Allumer / Éteindre (tous types)
     public function toggleEtat($id)

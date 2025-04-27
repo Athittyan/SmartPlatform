@@ -4,8 +4,10 @@
         <a href="{{ route('home') }}" class="nav-btn">Accueil</a>
 
         @auth
-            @if(Auth::user()->role === 'admin')
+            @if(auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'complexe'))
                 <a href="{{ route('objets.create') }}" class="nav-btn">+ Ajouter un objet</a>
+            @endif
+            @if(Auth::user()->role === 'admin')
                 <a href="{{ route('admin.emails.index') }}" class="nav-btn">👥 Gérer la famille</a>
             @endif
         @endauth

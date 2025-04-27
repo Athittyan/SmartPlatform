@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\EmailAutorise;
+use App\Models\User;
 
 class EmailAutoriseController extends Controller
 {
     public function index()
     {
         $emails = EmailAutorise::all();
-        return view('admin.emails.index', compact('emails'));
+        $users = User::all();
+
+        return view('admin.emails.index', compact('emails', 'users'));
     }
 
     public function store(Request $request)

@@ -21,11 +21,5 @@ class DatabaseSeeder extends Seeder
             LevelSeeder::class,
         ]);
         
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'points' => 0,
-            'level_id' => Level::where('name', 'Débutant')->first()?->id,
-        ]);
     }
 }

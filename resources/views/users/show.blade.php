@@ -81,7 +81,7 @@
             <span class="badge">{{ ucfirst($user->type_membre) }}</span>
 
             <ul class="list-group list-group-flush text-start">
-                @if($isAdmin)
+                @if(auth()->check() &&$isAdmin)
                     <li class="list-group-item"><strong>Nom :</strong> {{ $user->name }}</li>
                     <li class="list-group-item"><strong>Prénom :</strong> {{ $user->prenom }}</li>
                 @endif
@@ -90,7 +90,7 @@
                 <li class="list-group-item"><strong>Sexe :</strong> {{ ucfirst($user->sexe) }}</li>
                 <li class="list-group-item"><strong>Email :</strong> {{ $user->email }}</li>
 
-                @if($isAdmin)
+                @if(auth()->check() &&$isAdmin)
                     <li class="list-group-item"><strong>Mot de passe (hash) :</strong> {{ $user->password }}</li>
                 @endif
             </ul>
