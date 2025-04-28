@@ -34,7 +34,8 @@ Route::get('/redirect', function () {
 })->middleware(['auth']);
 
 // Espace admin
-Route::get('/admin', [AdminController::class, 'index'])->middleware('admin');
+Route::get('/admin', [AdminController::class, 'index'])->middleware('admin')->name('admin');
+
 
 // Authentification + vérification d’email
 Route::middleware(['auth', 'verified'])->group(function () {
