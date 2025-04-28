@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmailAutoriseController;
 use App\Http\Controllers\PdfController;
 
+use App\Http\Controllers\UserLevelController;
 
 // Page d’accueil
 Route::get('/', function () {
@@ -80,6 +81,8 @@ Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.de
 
 Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
 
+
+Route::post('/level-upgrade', [UserLevelController::class, 'upgrade'])->name('level.upgrade');
 
 // Auth routes (register, login...)
 require __DIR__.'/auth.php';

@@ -22,12 +22,34 @@
                      style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
 
                 <div style="display: flex; flex-direction: column; align-items: flex-start;">
-                    <span style="font-weight: bold;">{{ auth()->user()->prenom }}</span>
+                    <span style="font-weight: bold;">
+                        {{ auth()->user()->prenom }}
+                        @if(auth()->user()->role === 'admin')
+                            <span style="font-size: 0.7em; background-color: red; color: white; padding: 2px 6px; border-radius: 5px; margin-left: 5px;">Admin</span>
+                        @endif
+                    </span>
 
                     <span style="font-size: 0.9em; color: #555;">
-                        Niveau : <strong>{{ auth()->user()->level->name ?? 'Non défini' }}</strong> |
-                        Points : <strong>{{ auth()->user()->points }}</strong>
+                        Niveau : <strong>{{ auth()->user()->level->name ?? 'Non défini' }}</strong>
+                        @if(auth()->user()->role !== 'admin')
+                            | Points : <strong>{{ auth()->user()->points }}</strong>
+                        @endif
                     </span>
+
+                    @if(auth()->user()->role !== 'admin')
+                        @if(auth()->user()->level && auth()->user()->level->name === 'Expert')
+                            <button class="nav-btn small" style="background-color: grey; color: white; cursor: not-allowed; margin-top: 5px;" disabled>
+                                🏆 Niveau max
+                            </button>
+                        @elseif(auth()->user()->points >= 5)
+                            <form action="{{ route('level.upgrade') }}" method="POST" style="margin-top: 5px;">
+                                @csrf
+                                <button type="submit" class="nav-btn small" style="background-color: green; color: white;">
+                                    🚀 Passer au niveau supérieur
+                                </button>
+                            </form>
+                        @endif
+                    @endif
 
                     <div style="display: flex; gap: 10px; margin-top: 4px;">
                         <a href="{{ route('profile.edit') }}" class="nav-btn small">Modifier profil</a>

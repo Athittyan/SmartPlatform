@@ -26,12 +26,14 @@ class UserController extends Controller
     $validated = $request->validate([
         'pseudo' => 'required|string|max:255',
         'role' => 'required|string|in:simple,complexe,admin',
+        'level_id' => 'nullable|integer|exists:levels,id', // On ajoute level_id
     ]);
 
     $user->update($validated);
 
     return redirect()->route('admin.emails.index')->with('success', 'Membre modifié avec succès.');
 }
+
 
     public function destroy($id)
     {
