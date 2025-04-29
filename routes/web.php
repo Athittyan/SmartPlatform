@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmailAutoriseController;
 use App\Http\Controllers\PdfController;
 
+
 use App\Http\Controllers\UserLevelController;
 
 // Page d’accueil
@@ -84,6 +85,10 @@ Route::put('/users/{user}', [UserController::class, 'update'])->name('users.upda
 
 
 Route::post('/level-upgrade', [UserLevelController::class, 'upgrade'])->name('level.upgrade');
+
+Route::get('/profil', [ProfileController::class, 'show'])->middleware('auth')->name('profil.show');
+
+
 
 // Auth routes (register, login...)
 require __DIR__.'/auth.php';
