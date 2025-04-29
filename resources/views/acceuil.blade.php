@@ -128,7 +128,7 @@
 
 <div class="hero-section">
     <h1>Bienvenue sur <span style="color:#6c5ce7;">SmartPlatform</span> 👋</h1>
-    <p>Gère ta maison connectée simplement, efficacement et avec style.</p>
+    <p>Gère ton salon connecté simplement, efficacement et avec style.</p>
 
     <div class="hero-image-container">
         <img src="{{ asset('images/salon connecte.jpg') }}" alt="Salon connecté">
