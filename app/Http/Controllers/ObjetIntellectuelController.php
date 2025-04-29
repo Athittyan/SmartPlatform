@@ -5,72 +5,87 @@ namespace App\Http\Controllers;
 use App\Models\ObjetIntellectuel;
 use App\Models\InteractionObjet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class ObjetIntellectuelController extends Controller
 {
+    /**
+     * 📄 Affiche la liste standard des objets, avec filtres et pagination
+     */
     public function index(Request $request)
     {
         $query = ObjetIntellectuel::query();
 
-        // Recherche mots-clés (nom)
         if ($request->filled('search')) {
             $query->where('nom', 'like', '%' . $request->search . '%');
         }
-
-        // Filtre par type
         if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
-
-        // Filtre par état
         if ($request->filled('etat')) {
             $query->where('etat', $request->etat);
         }
-
-        // Filtre par mode
         if ($request->filled('mode')) {
             $query->where('mode', $request->mode);
         }
 
         $objets = $query->paginate(10);
-
         return view('objets.index', compact('objets'));
     }
 
+    /**
+     * ➕ Formulaire de création d’un nouvel objet
+     */
     public function create()
     {
         return view('objets.create');
     }
 
-    public function home(Request $request)
+    /**
+     * 💾 Stocke le nouvel objet en base
+     */
+    public function store(Request $request)
     {
-        $search = $request->input('search');
+        $data = $request->validate([
+            'nom'         => 'required|string|max:255',
+            'identifiant' => 'nullable|string|unique:objets_intellectuels,identifiant',
+            'type'        => 'required|string',
+            // … ajoute ici tes autres règles de validation …
+        ]);
 
-        $objets = ObjetIntellectuel::query()
-            ->when($search, function ($query, $search) {
-                return $query->where('nom', 'like', "%$search%");
-            })
-            ->get();
+        if (empty($data['identifiant'])) {
+            $data['identifiant'] = strtolower($data['type']) . '-' . now()->format('YmdHis');
+        }
 
-        return view('acceuil', compact('objets', 'search'));
+        ObjetIntellectuel::create($data);
+
+        return redirect()
+            ->route('objets.index')
+            ->with('success', 'Objet ajouté avec succès ✔️');
     }
 
+    /**
+     * 📋 Affiche un objet en détail, gère le scoring et les interactions
+     */
     public function show($id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
-        $user = auth()->user();
+        $user  = Auth::user();
 
-        $sessionKey = 'viewed_objets';
+        // Gestion du scoring utilisateur
+        $sessionKey   = 'viewed_objets';
         $viewedObjets = session()->get($sessionKey, []);
-        $now = now();
+        $now          = now();
 
+        // On nettoie les vues vieilles de plus de 24h
         $viewedObjets = collect($viewedObjets)
-            ->filter(function ($timestamp) use ($now) {
-                return \Carbon\Carbon::parse($timestamp)->diffInHours($now) < 24;
-            })
+            ->filter(fn($timestamp) => Carbon::parse($timestamp)->diffInHours($now) < 24)
             ->toArray();
 
-        $lastViewed = isset($viewedObjets[$id]) ? \Carbon\Carbon::parse($viewedObjets[$id]) : null;
+        $lastViewed = isset($viewedObjets[$id])
+            ? Carbon::parse($viewedObjets[$id])
+            : null;
 
         if ($user && (!$lastViewed || $lastViewed->diffInMinutes($now) >= 60)) {
             $user->addPoints(0.5);
@@ -79,39 +94,36 @@ class ObjetIntellectuelController extends Controller
             session()->put($sessionKey, $viewedObjets);
         }
 
+        // Dernières interactions
         $interactions = InteractionObjet::where('objet_intellectuel_id', $id)
             ->orderBy('created_at', 'desc')
             ->take(7)
             ->get();
 
-        // Calculer si c'est un visiteur
-       // Calculer si c'est un visiteur ou un utilisateur simple
-$isVisiteur = auth()->guest() || (auth()->check() && (auth()->user()->role === 'visiteur' || auth()->user()->role === 'simple'));
-
+        // Détection visiteur
+        $isVisiteur = Auth::guest()
+            || (Auth::check() && in_array(Auth::user()->role, ['visiteur', 'simple']));
 
         return view('objets.show', compact('objet', 'interactions', 'isVisiteur'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nom' => 'required',
-            'etat_batterie' => 'nullable|integer',
-        ]);
-
-        ObjetIntellectuel::create($request->all());
-        return redirect()->route('objets.index')->with('success', 'Objet ajouté avec succès.');
-    }
-
+    /**
+     * 🔁 Basculer l’état de l’objet
+     */
     public function toggleEtat($id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
         $objet->etat = $objet->etat === 'on' ? 'off' : 'on';
         $objet->save();
 
-        return redirect()->route('objets.show', $objet->id)->with('success', 'État modifié !');
+        return redirect()
+            ->route('objets.show', $id)
+            ->with('success', 'État modifié ✔️');
     }
 
+    /**
+     * 📺 Changer le volume (TV)
+     */
     public function changeVolume(Request $request, $id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
@@ -122,9 +134,14 @@ $isVisiteur = auth()->guest() || (auth()->check() && (auth()->user()->role === '
             $objet->save();
         }
 
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Volume modifié !');
+        return redirect()
+            ->route('objets.show', $id)
+            ->with('success', 'Volume modifié ✔️');
     }
 
+    /**
+     * 📺 Changer la chaîne (TV)
+     */
     public function changeChaine(Request $request, $id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
@@ -135,9 +152,14 @@ $isVisiteur = auth()->guest() || (auth()->check() && (auth()->user()->role === '
             $objet->save();
         }
 
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Chaîne modifiée !');
+        return redirect()
+            ->route('objets.show', $id)
+            ->with('success', 'Chaîne modifiée ✔️');
     }
 
+    /**
+     * 💡 Changer la luminosité (Lampe)
+     */
     public function changeLuminosite(Request $request, $id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
@@ -148,9 +170,14 @@ $isVisiteur = auth()->guest() || (auth()->check() && (auth()->user()->role === '
             $objet->save();
         }
 
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Luminosité modifiée !');
+        return redirect()
+            ->route('objets.show', $id)
+            ->with('success', 'Luminosité modifiée ✔️');
     }
 
+    /**
+     * 💡 Changer la couleur (Lampe)
+     */
     public function changeCouleur(Request $request, $id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
@@ -161,9 +188,14 @@ $isVisiteur = auth()->guest() || (auth()->check() && (auth()->user()->role === '
             $objet->save();
         }
 
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Couleur modifiée !');
+        return redirect()
+            ->route('objets.show', $id)
+            ->with('success', 'Couleur modifiée ✔️');
     }
 
+    /**
+     * 🌡️ Changer la température (Thermostat)
+     */
     public function changeTemperature(Request $request, $id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
@@ -174,9 +206,14 @@ $isVisiteur = auth()->guest() || (auth()->check() && (auth()->user()->role === '
             $objet->save();
         }
 
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Température modifiée !');
+        return redirect()
+            ->route('objets.show', $id)
+            ->with('success', 'Température modifiée ✔️');
     }
 
+    /**
+     * 🌡️ Changer le mode (Thermostat)
+     */
     public function changeMode(Request $request, $id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
@@ -187,9 +224,14 @@ $isVisiteur = auth()->guest() || (auth()->check() && (auth()->user()->role === '
             $objet->save();
         }
 
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Mode modifié !');
+        return redirect()
+            ->route('objets.show', $id)
+            ->with('success', 'Mode modifié ✔️');
     }
 
+    /**
+     * 🪟 Changer la position (Store électrique)
+     */
     public function changePosition(Request $request, $id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
@@ -200,6 +242,64 @@ $isVisiteur = auth()->guest() || (auth()->check() && (auth()->user()->role === '
             $objet->save();
         }
 
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Position modifiée !');
+        return redirect()
+            ->route('objets.show', $id)
+            ->with('success', 'Position modifiée ✔️');
+    }
+
+    /**
+     * 🌐 Liste pour choisir un objet à modifier
+     */
+    public function editList()
+    {
+        $objets = ObjetIntellectuel::all();
+        return view('objets.edit-list', compact('objets'));
+    }
+
+    /**
+     * ✏️ Formulaire d’édition
+     */
+    public function edit($id)
+    {
+        $objet = ObjetIntellectuel::findOrFail($id);
+        return view('objets.edit', compact('objet'));
+    }
+
+    /**
+     * 💾 Enregistrement de la modification
+     */
+    public function update(Request $request, $id)
+    {
+        $data = $request->validate([
+            'nom'         => 'required|string|max:255',
+            'identifiant' => 'required|string|max:255|unique:objets_intellectuels,identifiant,' . $id,
+        ]);
+
+        ObjetIntellectuel::findOrFail($id)->update($data);
+
+        return redirect()
+            ->route('objets.editList')
+            ->with('success', 'Objet modifié avec succès ✔️');
+    }
+
+    /**
+     * 🔴 Liste pour choisir un objet à supprimer
+     */
+    public function deleteList()
+    {
+        $objets = ObjetIntellectuel::all();
+        return view('objets.delete-list', compact('objets'));
+    }
+
+    /**
+     * ❌ Suppression de l’objet
+     */
+    public function destroy($id)
+    {
+        ObjetIntellectuel::findOrFail($id)->delete();
+
+        return redirect()
+            ->route('objets.deleteList')
+            ->with('success', 'Objet supprimé avec succès ❌');
     }
 }
