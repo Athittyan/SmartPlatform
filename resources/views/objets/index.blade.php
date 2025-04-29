@@ -57,10 +57,10 @@
 
         <div class="objet-card" style="display: flex; align-items: center; gap: 20px;">
             <img src="{{ asset('images/' . $nomImage) }}"
-                 alt="Image {{ $objet->type }}"
-                 style="width: 120px; height: 120px; object-fit: cover; border-radius: 10px;">
+                alt="Image {{ $objet->type }}"
+                style="width: 120px; height: 120px; object-fit: cover; border-radius: 10px;">
 
-            <div>
+            <div style="flex-grow: 1;">
                 <a href="{{ route('objets.show', $objet->id) }}" style="font-size: 1.2em; font-weight: bold; color: #3490dc;">
                     {{ $objet->nom }} ({{ $objet->type }})
                 </a>
@@ -68,7 +68,18 @@
                     🕒 Dernière interaction : {{ $objet->derniere_interaction }}
                 </p>
             </div>
+
+            @if(auth()->user()->role === 'admin')
+                <form action="{{ route('objets.destroy', $objet->id) }}" method="POST" style="margin-left: auto;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="nav-btn small" style="background-color: red; color: white;" onclick="return confirm('Voulez-vous vraiment supprimer cet objet ?')">
+                        🗑 Supprimer
+                    </button>
+                </form>
+            @endif
         </div>
+
 
     @empty
         <div style="text-align: center;">

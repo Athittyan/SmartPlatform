@@ -238,4 +238,12 @@ class ObjetIntellectuelController extends Controller
 
         return redirect()->route('objets.show', $objet->id)->with('success', 'Position modifiée !');
     }
+    public function destroy($id)
+    {
+        $objet = ObjetIntellectuel::findOrFail($id);
+        $objet->delete();
+
+        return redirect()->route('objets.index')->with('success', 'Objet supprimé avec succès.');
+    }
+
 }
