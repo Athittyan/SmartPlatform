@@ -69,7 +69,7 @@
                 </p>
             </div>
 
-            @if(auth()->user()->role === 'admin')
+            @if(auth()->check() && auth()->user()->role === 'admin')
                 <form action="{{ route('objets.destroy', $objet->id) }}" method="POST" style="margin-left: auto;">
                     @csrf
                     @method('DELETE')
