@@ -21,7 +21,11 @@ Route::get('/', function () {
 Route::get('/objets/edit-list',   [ObjetIntellectuelController::class, 'editList'])->name('objets.editList');
 Route::get('/objets/delete-list', [ObjetIntellectuelController::class, 'deleteList'])->name('objets.deleteList');
 
-// Objets intellectuels (CRUD standard)
+// Route pour la “demande” de suppression (rôle complexe)
+Route::post('/objets/{id}/request-delete', [ObjetIntellectuelController::class, 'requestDelete'])
+     ->name('objets.requestDelete');
+
+// CRUD standard pour les objets
 Route::resource('objets', ObjetIntellectuelController::class);
 
 // Redirection après login
