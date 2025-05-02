@@ -49,8 +49,12 @@
             @endif
 
         </div>
+<<<<<<< HEAD
 
         @if(!$isVisiteur)
+=======
+        @if(auth()->user() && in_array(auth()->user()->role, ['complexe', 'admin']))
+>>>>>>> origin/main
         <div class="options-all">
             {{-- 📺 OPTIONS TV --}}
             @if($objet->type === 'TV')
@@ -76,12 +80,16 @@
             @endif
         </div>
         @endif
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
     </div>
 
     <a href="{{ route('objets.index') }}" class="nav-btn" style="margin-top: 1rem; display: inline-block;">Retour à la liste</a>
 </div>
 
+<<<<<<< HEAD
 {{-- 💡 OPTIONS LAMPE --}}
 @if($objet->type === 'Lampe' && !$isVisiteur)
 <div class="options-all">
@@ -180,6 +188,15 @@
                         $avant = json_decode($interaction->valeurs_avant, true) ?? [];
                         $apres = json_decode($interaction->valeurs_apres, true) ?? [];
                     @endphp
+=======
+@if(auth()->user() && in_array(auth()->user()->role, ['complexe', 'admin']))
+    {{-- INTERACTIONS TV --}}
+    @if($objet->type === 'TV' && $interactions->count())
+        <h2 class="section-title">📺 Historique des interactions (TV)</h2>
+        <div class="interactions-wrapper">
+            <table class="interactions-table">
+                <thead>
+>>>>>>> origin/main
                     <tr>
                         <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
                         <td>{{ ucfirst($interaction->action) }}</td>
@@ -332,9 +349,59 @@
 
         <canvas id="storeChart"></canvas>
     </div>
+    @endif
+
+<<<<<<< HEAD
+{{-- CHARTS --}}
+=======
+
+    @if($objet->type === 'Store électrique' && $interactions->count())
+        <h2 class="section-title">🪟 Historique des interactions (Store)</h2>
+
+        <div class="interactions-wrapper">
+            <table class="interactions-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Avant</th>
+                        <th>Après</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($interactions as $interaction)
+                        @php
+                            $avant = json_decode($interaction->valeurs_avant, true) ?? [];
+                            $apres = json_decode($interaction->valeurs_apres, true) ?? [];
+                        @endphp
+                        <tr>
+                            <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
+                            <td>{{ ucfirst($interaction->action) }}</td>
+                            <td>
+                                @if(isset($avant['position']))
+                                    Position : {{ $avant['position'] }}%
+                                @else
+                                    —
+                                @endif
+                            </td>
+                            <td>
+                                @if(isset($apres['position']))
+                                    Position : {{ $apres['position'] }}%
+                                @else
+                                    —
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <canvas id="storeChart"></canvas>
+        </div>
+    @endif
 @endif
 
-{{-- CHARTS --}}
+>>>>>>> origin/main
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -469,8 +536,20 @@
         display: block;
     }   
 </style>
+<<<<<<< HEAD
 
 
+=======
+@if(auth()->user() && in_array(auth()->user()->role, ['complexe', 'admin']))
+<div class="download-pdf-btn" style="text-align: center; margin-top: 2rem;">
+    <form id="pdfForm" action="{{ route('objets.pdf', $objet->id) }}" method="POST">
+        @csrf
+        <input type="hidden" name="chart_image" id="chartImageInput">
+        <button type="submit" class="nav-btn">📄 Générer le rapport PDF</button>
+    </form>
+</div>
+@endif
+>>>>>>> origin/main
 
 <script>
 document.getElementById('pdfForm')?.addEventListener('submit', function (e) {
@@ -479,6 +558,7 @@ document.getElementById('pdfForm')?.addEventListener('submit', function (e) {
         const imageData = canvas.toDataURL('image/png');
         document.getElementById('chartImageInput').value = imageData;
     }
+<<<<<<< HEAD
 });
 
 function toggleOptions(id) {
@@ -490,3 +570,6 @@ function toggleOptions(id) {
     }
 }
 </script>
+=======
+</script>
+>>>>>>> origin/main

@@ -76,4 +76,9 @@ class User extends Authenticatable implements MustVerifyEmail
             $this->save();
         }
     }
+
+    public function isValidatedByAdmin()
+{
+    return $this->is_approved;
+}
 }

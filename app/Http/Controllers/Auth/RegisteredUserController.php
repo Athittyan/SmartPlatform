@@ -30,11 +30,11 @@ class RegisteredUserController extends Controller
         ]);
 
         // Vérifie si l'email est autorisé
-        if (!EmailAutorise::where('email', $request->email)->exists()) {
-            return back()->withErrors([
-                'email' => 'Cet email n\'est pas autorisé à s\'inscrire.',
-            ])->withInput();
-        }
+        //if (!EmailAutorise::where('email', $request->email)->exists()) {
+         //   return back()->withErrors([
+         //       'email' => 'Cet email n\'est pas autorisé à s\'inscrire.',
+         //   ])->withInput();
+       // }
 
         //Récupère dynamiquement l'Id du niveau "Débutant"
         $levelId = Level::where('name', 'Débutant')->first()->id;
@@ -47,7 +47,7 @@ class RegisteredUserController extends Controller
             'level_id' => $levelId,
         ]);
 
-        event(new Registered($user));
+        //event(new Registered($user));
 
         Auth::login($user);
 

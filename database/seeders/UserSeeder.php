@@ -25,21 +25,36 @@ class UserSeeder extends Seeder
                 'email' => 'admin@example.com',
                 'password' => Hash::make('admin123'),
                 'role' => 'admin',
+                'email_verified_at' => now(),
                 'points' => 10,
                 'level_id' => $debutant?->id,
             ]);
         }
 
-        // Visiteur
-        if (!User::where('email', 'visiteur@example.com')->exists()) {
+        // Simple
+        if (!User::where('email', 'simple@example.com')->exists()) {
             User::create([
-                'name' => 'Visiteur One',
-                'email' => 'visiteur@example.com',
-                'password' => Hash::make('visiteur123'),
-                'role' => 'visiteur',
+                'name' => 'Simple One',
+                'email' => 'simple@example.com',
+                'password' => Hash::make('simple123'),
+                'role' => 'simple',
+                'email_verified_at' => now(),
+                'points' => 0,
+                'level_id' => $debutant?->id,
+            ]);
+        }
+
+        // Complexe
+        if (!User::where('email', 'complexe@example.com')->exists()) {
+            User::create([
+                'name' => 'Complexe One',
+                'email' => 'complexe@example.com',
+                'password' => Hash::make('complexe123'),
+                'role' => 'complexe',
+                'email_verified_at' => now(),
                 'points' => 0,
                 'level_id' => $debutant?->id,
             ]);
         }
     }
-}
+}   

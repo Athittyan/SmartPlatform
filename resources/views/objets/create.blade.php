@@ -1,11 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
+@if(auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'complexe'))
     <div class="container">
         <h1 style="color: #3490dc; margin-bottom: 20px;">➕ Ajouter un objet intellectuel</h1>
 
         <form action="{{ route('objets.store') }}" method="POST">
             @csrf
+            <div>
+                <label>Identifiant de l'objet :</label>
+                <input type="text" name="identifiant" required>
+            </div>
 
             <div>
                 <label>Nom de l’objet :</label>
@@ -101,7 +106,7 @@
             <button type="submit" class="btn-green">Enregistrer</button>
         </form>
     </div>
-
+@endif
     <script>
         function afficherChampsSpecifiques() {
             const type = document.getElementById("type").value;
