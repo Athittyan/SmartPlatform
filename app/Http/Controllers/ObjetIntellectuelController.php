@@ -42,15 +42,44 @@ class ObjetIntellectuelController extends Controller
         return view('objets.create');
     }
 
+    // Méthode pour afficher les détails d'un objet
     public function show($id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
-        $user  = Auth::user();
+        $user = auth()->user();
 
-        // (scoring + interactions…)
+        $sessionKey = 'viewed_objets';
+        $viewedObjets = session()->get($sessionKey, []);
+        $now = now();
 
-        return view('objets.show', compact('objet', 'interactions', 'isVisiteur'));
+        $viewedObjets = collect($viewedObjets)
+            ->filter(function($timestamp) use ($now) {
+                return \Carbon\Carbon::parse($timestamp)->diffInHours($now) < 24;
+            })
+            ->toArray();
+        
+        //Vérifie si l'objet a déjà été consulté il y a moins d'une heure
+        $lastViewed = isset($viewedObjts[$id]) ? \Carbon\Carbon::parse($viewedObjets[$id]) : null;
+
+        if ($user && (!$lastViewed || $lastViewed->diffInMinutes($now) >= 60)) {
+            $user->addPoints(0.5);         // ajoute 0.5 point
+            $user->changeLevel();          // vérifie si changement de niveau
+            $viewedObjets[$id] = $now->toDateTimeString(); // met à jour la session
+            session()->put($sessionKey, $viewedObjets);
+        }
+
+        // Récupérer les interactions associées à cet objet
+        $interactions = InteractionObjet::where('objet_intellectuel_id', $id)
+        ->orderBy('created_at', 'desc')
+        ->take(7)
+        ->get();
+
+
+        // Passer les données à la vue
+        return view('objets.show', compact('objet', 'interactions'));
     }
+
+   
 
     public function store(Request $request)
     {

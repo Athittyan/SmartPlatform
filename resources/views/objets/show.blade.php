@@ -49,146 +49,91 @@
             @endif
 
         </div>
-<<<<<<< HEAD
-
-        @if(!$isVisiteur)
-=======
         @if(auth()->user() && in_array(auth()->user()->role, ['complexe', 'admin']))
->>>>>>> origin/main
         <div class="options-all">
             {{-- 📺 OPTIONS TV --}}
             @if($objet->type === 'TV')
                 <button onclick="toggleOptions('tv-options')" style="margin-top: 1rem;">🎛️ Options Télé</button>
                 <div id="tv-options" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
-                    <form action="{{ route('objets.toggleEtat', $objet->id) }}" method="POST" style="margin: 1rem 0;">
-                        @csrf
+                    <form action="{{ route('objets.toggleEtat', $objet->id) }}" method="POST" style="margin: 1rem 0;">@csrf
                         <button type="submit">{{ $objet->etat === 'on' ? 'Éteindre' : 'Allumer' }}</button>
                     </form>
-                    <form action="{{ route('objets.changeVolume', $objet->id) }}" method="POST" style="margin-bottom: 1rem;">
-                        @csrf
+                    <form action="{{ route('objets.changeVolume', $objet->id) }}" method="POST" style="margin-bottom: 1rem;">@csrf
                         <label>Volume : <span id="volume-value">{{ $objet->volume }}</span>%</label><br>
                         <input type="range" name="volume" min="0" max="100" value="{{ $objet->volume }}" oninput="document.getElementById('volume-value').textContent = this.value">
                         <button type="submit">📢 Appliquer</button>
                     </form>
-                    <form action="{{ route('objets.changeChaine', $objet->id) }}" method="POST">
-                        @csrf
+                    <form action="{{ route('objets.changeChaine', $objet->id) }}" method="POST">@csrf
                         <label>Chaîne :</label>
                         <input type="number" name="chaine" value="{{ $objet->chaine_actuelle }}" min="1">
                         <button type="submit">📺 Changer</button>
                     </form>
                 </div>
             @endif
+
+            {{-- 💡 OPTIONS LAMPE --}}
+            @if($objet->type === 'Lampe')
+                <button onclick="toggleOptions('lampe-options')" style="margin-top: 1rem;">🎛️ Options Lampe</button>
+                <div id="lampe-options" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
+                    <form action="{{ route('objets.toggleEtat', $objet->id) }}" method="POST" style="margin: 1rem 0;">@csrf
+                        <button type="submit">{{ $objet->etat === 'on' ? 'Éteindre' : 'Allumer' }}</button>
+                    </form>
+                    <form action="{{ route('objets.changeLuminosite', $objet->id) }}" method="POST">@csrf
+                        <label>Luminosité : <span id="luminosite-value">{{ $objet->luminosite }}</span>%</label><br>
+                        <input type="range" name="luminosite" min="0" max="100" value="{{ $objet->luminosite }}" oninput="document.getElementById('luminosite-value').textContent = this.value">
+                        <button type="submit">💡 Appliquer</button>
+                    </form>
+                    <form action="{{ route('objets.changeCouleur', $objet->id) }}" method="POST" style="margin-top: 1rem;">@csrf
+                        <label>Couleur :</label>
+                        <input type="color" name="couleur" value="{{ $objet->couleur ?? '#ffffff' }}">
+                        <button type="submit">🎨 Changer</button>
+                    </form>
+                </div>
+            @endif
+
+            {{-- 🌡️ OPTIONS THERMOSTAT --}}
+            @if($objet->type === 'Thermostat')
+                <button onclick="toggleOptions('thermostat-options')" style="margin-top: 1rem;">🎛️ Options Thermostat</button>
+                <div id="thermostat-options" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
+                    <form action="{{ route('objets.toggleEtat', $objet->id) }}" method="POST" style="margin: 1rem 0;">@csrf
+                        <button type="submit">{{ $objet->etat === 'on' ? 'Éteindre' : 'Allumer' }}</button>
+                    </form>
+                    <form action="{{ route('objets.changeTemperature', $objet->id) }}" method="POST" style="margin-bottom: 1rem;">@csrf
+                        <label>Température (°C) :</label>
+                        <input type="number" name="temperature" value="{{ $objet->temperature_cible ?? 20 }}" step="0.5" min="5" max="35">
+                        <button type="submit">🌡️ Régler</button>
+                    </form>
+                </div>
+            @endif
+
+            {{-- 🕵️‍♂️ OPTIONS CAPTEUR --}}
+            @if($objet->type === 'Capteur de présence')
+                <button onclick="toggleOptions('capteur-options')" style="margin-top: 1rem;">🎛️ Options capteur </button>
+                <div id="capteur-options" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
+                    <form action="{{ route('objets.toggleEtat', $objet->id) }}" method="POST" style="margin: 1rem 0;">@csrf
+                        <button type="submit">{{ $objet->etat === 'on' ? 'Éteindre' : 'Allumer' }}</button>
+                    </form>
+                </div>
+            @endif
+
+            {{-- 🪟 OPTIONS STORE --}}
+            @if($objet->type === 'Store électrique')
+                <button onclick="toggleOptions('store-options')" style="margin-top: 1rem;">🎛️ Options Store</button>
+                <div id="store-options" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
+                    <form action="{{ route('objets.changePosition', $objet->id) }}" method="POST" style="margin-top: 1rem;">@csrf
+                        <label>Fermeture du store : <span id="position-value">{{ $objet->position }}</span>%</label><br>
+                        <input type="range" name="position" min="0" max="100" value="{{ $objet->position }}" oninput="document.getElementById('position-value').textContent = this.value">
+                        <button type="submit">📐 Appliquer</button>
+                    </form>
+                </div>
+            @endif
         </div>
         @endif
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
     </div>
-
+    
     <a href="{{ route('objets.index') }}" class="nav-btn" style="margin-top: 1rem; display: inline-block;">Retour à la liste</a>
 </div>
 
-<<<<<<< HEAD
-{{-- 💡 OPTIONS LAMPE --}}
-@if($objet->type === 'Lampe' && !$isVisiteur)
-<div class="options-all">
-    <button onclick="toggleOptions('lampe-options')" style="margin-top: 1rem;">🎛️ Options Lampe</button>
-    <div id="lampe-options" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
-        <form action="{{ route('objets.toggleEtat', $objet->id) }}" method="POST" style="margin: 1rem 0;">
-            @csrf
-            <button type="submit">{{ $objet->etat === 'on' ? 'Éteindre' : 'Allumer' }}</button>
-        </form>
-        <form action="{{ route('objets.changeLuminosite', $objet->id) }}" method="POST">
-            @csrf
-            <label>Luminosité : <span id="luminosite-value">{{ $objet->luminosite }}</span>%</label><br>
-            <input type="range" name="luminosite" min="0" max="100" value="{{ $objet->luminosite }}" oninput="document.getElementById('luminosite-value').textContent = this.value">
-            <button type="submit">💡 Appliquer</button>
-        </form>
-        <form action="{{ route('objets.changeCouleur', $objet->id) }}" method="POST" style="margin-top: 1rem;">
-            @csrf
-            <label>Couleur :</label>
-            <input type="color" name="couleur" value="{{ $objet->couleur ?? '#ffffff' }}">
-            <button type="submit">🎨 Changer</button>
-        </form>
-    </div>
-</div>
-@endif
-
-{{-- 🌡️ OPTIONS THERMOSTAT --}}
-@if($objet->type === 'Thermostat' && !$isVisiteur)
-<div class="options-all">
-    <button onclick="toggleOptions('thermostat-options')" style="margin-top: 1rem;">🎛️ Options Thermostat</button>
-    <div id="thermostat-options" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
-        <form action="{{ route('objets.toggleEtat', $objet->id) }}" method="POST" style="margin: 1rem 0;">
-            @csrf
-            <button type="submit">{{ $objet->etat === 'on' ? 'Éteindre' : 'Allumer' }}</button>
-        </form>
-        <form action="{{ route('objets.changeTemperature', $objet->id) }}" method="POST" style="margin-bottom: 1rem;">
-            @csrf
-            <label>Température (°C) :</label>
-            <input type="number" name="temperature" value="{{ $objet->temperature_cible ?? 20 }}" step="0.5" min="5" max="35">
-            <button type="submit">🌡️ Régler</button>
-        </form>
-    </div>
-</div>
-@endif
-
-{{-- 🕵️‍♂️ OPTIONS CAPTEUR --}}
-@if($objet->type === 'Capteur de présence' && !$isVisiteur)
-<div class="options-all">
-    <button onclick="toggleOptions('capteur-options')" style="margin-top: 1rem;">🎛️ Options capteur</button>
-    <div id="capteur-options" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
-        <form action="{{ route('objets.toggleEtat', $objet->id) }}" method="POST" style="margin: 1rem 0;">
-            @csrf
-            <button type="submit">{{ $objet->etat === 'on' ? 'Éteindre' : 'Allumer' }}</button>
-        </form>
-    </div>
-</div>
-@endif
-
-
-{{-- 🪟 OPTIONS STORE --}}
-@if($objet->type === 'Store électrique' && !$isVisiteur)
-<div class="options-all">
-    <button onclick="toggleOptions('store-options')" style="margin-top: 1rem;">🎛️ Options Store</button>
-    <div id="store-options" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
-        <form action="{{ route('objets.changePosition', $objet->id) }}" method="POST" style="margin-top: 1rem;">
-            @csrf
-            <label>Fermeture du store : <span id="position-value">{{ $objet->position }}</span>%</label><br>
-            <input type="range" name="position" min="0" max="100" value="{{ $objet->position }}" oninput="document.getElementById('position-value').textContent = this.value">
-            <button type="submit">📐 Appliquer</button>
-        </form>
-    </div>
-</div>
-@endif
-</div> {{-- fermeture options-all --}}
-</div> {{-- fermeture details-options-wrapper --}}
-
-
-</div>
-
-{{-- INTERACTIONS TV --}}
-@if(!$isVisiteur && $objet->type === 'TV' && $interactions->count())
-    <h2 class="section-title">📺 Historique des interactions (TV)</h2>
-    <div class="interactions-wrapper">
-        <table class="interactions-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Action</th>
-                    <th>Valeurs avant</th>
-                    <th>Valeurs après</th>
-                    <th>Conso énergie (W)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($interactions as $interaction)
-                    @php
-                        $avant = json_decode($interaction->valeurs_avant, true) ?? [];
-                        $apres = json_decode($interaction->valeurs_apres, true) ?? [];
-                    @endphp
-=======
 @if(auth()->user() && in_array(auth()->user()->role, ['complexe', 'admin']))
     {{-- INTERACTIONS TV --}}
     @if($objet->type === 'TV' && $interactions->count())
@@ -196,77 +141,89 @@
         <div class="interactions-wrapper">
             <table class="interactions-table">
                 <thead>
->>>>>>> origin/main
                     <tr>
-                        <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
-                        <td>{{ ucfirst($interaction->action) }}</td>
-                        <td>
-                            @if(isset($avant['etat'])) État : {{ $avant['etat'] }}<br>@endif
-                            @if(isset($avant['volume'])) Volume : {{ $avant['volume'] }}<br>@endif
-                            @if(isset($avant['chaine_actuelle'])) Chaîne : {{ $avant['chaine_actuelle'] }}@endif
-                        </td>
-                        <td>
-                            @if(isset($apres['etat'])) État : {{ $apres['etat'] }}<br>@endif
-                            @if(isset($apres['volume'])) Volume : {{ $apres['volume'] }}<br>@endif
-                            @if(isset($apres['chaine_actuelle'])) Chaîne : {{ $apres['chaine_actuelle'] }}@endif
-                        </td>
-                        <td>{{ $interaction->consommation_energie ?? '—' }}</td>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Valeurs avant</th>
+                        <th>Valeurs après</th>
+                        <th>Conso énergie (W)</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach ($interactions as $interaction)
+                        @php
+                            $avant = json_decode($interaction->valeurs_avant, true) ?? [];
+                            $apres = json_decode($interaction->valeurs_apres, true) ?? [];
+                        @endphp
+                        <tr>
+                            <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
+                            <td>{{ ucfirst($interaction->action) }}</td>
+                            <td>
+                                @if(isset($avant['etat'])) État : {{ $avant['etat'] }}<br>@endif
+                                @if(isset($avant['volume'])) Volume : {{ $avant['volume'] }}<br>@endif
+                                @if(isset($avant['chaine_actuelle'])) Chaîne : {{ $avant['chaine_actuelle'] }}@endif
+                            </td>
+                            <td>
+                                @if(isset($apres['etat'])) État : {{ $apres['etat'] }}<br>@endif
+                                @if(isset($apres['volume'])) Volume : {{ $apres['volume'] }}<br>@endif
+                                @if(isset($apres['chaine_actuelle'])) Chaîne : {{ $apres['chaine_actuelle'] }}@endif
+                            </td>
+                            <td>{{ $interaction->consommation_energie ?? '—' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-        <canvas id="tvChart"></canvas>
-    </div>
-@endif
+            <canvas id="tvChart"></canvas>
+        </div>
+    @endif
 
-
-{{-- INTERACTIONS LAMPE --}}
-@if(!$isVisiteur && $objet->type === 'Lampe' && $interactions->count())
-    <h2 class="section-title">💡 Historique des interactions (Lampe)</h2>
-    <div class="interactions-wrapper">
-        <table class="interactions-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Action</th>
-                    <th>Avant</th>
-                    <th>Après</th>
-                    <th>Conso énergie (W)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($interactions as $interaction)
-                    @php
-                        $avant = json_decode($interaction->valeurs_avant, true) ?? [];
-                        $apres = json_decode($interaction->valeurs_apres, true) ?? [];
-                    @endphp
+    {{-- INTERACTIONS LAMPE --}}
+    @if($objet->type === 'Lampe' && $interactions->count())
+        <h2 class="section-title">💡 Historique des interactions (Lampe)</h2>
+        <div class="interactions-wrapper">
+            <table class="interactions-table">
+                <thead>
                     <tr>
-                        <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
-                        <td>{{ ucfirst($interaction->action) }}</td>
-                        <td>
-                            @if(isset($avant['etat'])) État : {{ $avant['etat'] }}<br>@endif
-                            @if(isset($avant['luminosite'])) Luminosité : {{ $avant['luminosite'] }}%<br>@endif
-                            @if(isset($avant['couleur'])) Couleur : {{ $avant['couleur'] }}@endif
-                        </td>
-                        <td>
-                            @if(isset($apres['etat'])) État : {{ $apres['etat'] }}<br>@endif
-                            @if(isset($apres['luminosite'])) Luminosité : {{ $apres['luminosite'] }}%<br>@endif
-                            @if(isset($apres['couleur'])) Couleur : {{ $apres['couleur'] }}@endif
-                        </td>
-                        <td>{{ $interaction->consommation_energie ?? '—' }}</td>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Avant</th>
+                        <th>Après</th>
+                        <th>Conso énergie (W)</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach ($interactions as $interaction)
+                        @php
+                            $avant = json_decode($interaction->valeurs_avant, true) ?? [];
+                            $apres = json_decode($interaction->valeurs_apres, true) ?? [];
+                        @endphp
+                        <tr>
+                            <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
+                            <td>{{ ucfirst($interaction->action) }}</td>
+                            <td>
+                                @if(isset($avant['etat'])) État : {{ $avant['etat'] }}<br>@endif
+                                @if(isset($avant['luminosite'])) Luminosité : {{ $avant['luminosite'] }}%<br>@endif
+                                @if(isset($avant['couleur'])) Couleur : {{ $avant['couleur'] }}@endif
+                            </td>
+                            <td>
+                                @if(isset($apres['etat'])) État : {{ $apres['etat'] }}<br>@endif
+                                @if(isset($apres['luminosite'])) Luminosité : {{ $apres['luminosite'] }}%<br>@endif
+                                @if(isset($apres['couleur'])) Couleur : {{ $apres['couleur'] }}@endif
+                            </td>
+                            <td>{{ $interaction->consommation_energie ?? '—' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-        <canvas id="lampChart"></canvas>
-    </div>
-@endif
+            <canvas id="lampChart"></canvas>
+        </div>
+    @endif
 
-{{-- INTERACTIONS THERMOSTAT --}}
-@if(!$isVisiteur && $objet->type === 'Thermostat' && $interactions->count())
+    @if($objet->type === 'Thermostat' && $interactions->count())
     <h2 class="section-title">🌡️ Historique des interactions (Thermostat)</h2>
+
     <div class="interactions-wrapper">
         <table class="interactions-table">
             <thead>
@@ -287,11 +244,11 @@
                         <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
                         <td>{{ ucfirst($interaction->action) }}</td>
                         <td>
-                            @if(isset($avant['etat'])) État : {{ $avant['etat'] }}<br>@endif
+                            @if(isset($avant['etat'])) État : {{ $avant['etat'] }}<br> @endif
                             @if(isset($avant['temperature_cible'])) Température cible : {{ $avant['temperature_cible'] }}°C @endif
                         </td>
                         <td>
-                            @if(isset($apres['etat'])) État : {{ $apres['etat'] }}<br>@endif
+                            @if(isset($apres['etat'])) État : {{ $apres['etat'] }}<br> @endif
                             @if(isset($apres['temperature_cible'])) Température cible : {{ $apres['temperature_cible'] }}°C @endif
                         </td>
                     </tr>
@@ -301,59 +258,8 @@
 
         <canvas id="thermostatChart"></canvas>
     </div>
-@endif
-
-
-
-{{-- INTERACTIONS STORE --}}
-@if(!$isVisiteur && $objet->type === 'Store électrique' && $interactions->count())
-    <h2 class="section-title">🪟 Historique des interactions (Store)</h2>
-
-    <div class="interactions-wrapper">
-        <table class="interactions-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Action</th>
-                    <th>Avant</th>
-                    <th>Après</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($interactions as $interaction)
-                    @php
-                        $avant = json_decode($interaction->valeurs_avant, true) ?? [];
-                        $apres = json_decode($interaction->valeurs_apres, true) ?? [];
-                    @endphp
-                    <tr>
-                        <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
-                        <td>{{ ucfirst($interaction->action) }}</td>
-                        <td>
-                            @if(isset($avant['position']))
-                                Position : {{ $avant['position'] }}%
-                            @else
-                                —
-                            @endif
-                        </td>
-                        <td>
-                            @if(isset($apres['position']))
-                                Position : {{ $apres['position'] }}%
-                            @else
-                                —
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-        <canvas id="storeChart"></canvas>
-    </div>
     @endif
 
-<<<<<<< HEAD
-{{-- CHARTS --}}
-=======
 
     @if($objet->type === 'Store électrique' && $interactions->count())
         <h2 class="section-title">🪟 Historique des interactions (Store)</h2>
@@ -401,11 +307,10 @@
     @endif
 @endif
 
->>>>>>> origin/main
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-@if(!$isVisiteur && $objet->type === 'TV')
+@if($objet->type === 'TV')
 <script>
     new Chart(document.getElementById('tvChart'), {
         type: 'line',
@@ -423,7 +328,7 @@
 </script>
 @endif
 
-@if(!$isVisiteur && $objet->type === 'Lampe')
+@if($objet->type === 'Lampe')
 <script>
     new Chart(document.getElementById('lampChart'), {
         type: 'line',
@@ -440,10 +345,8 @@
     });
 </script>
 @endif
-@endsection
 
-
-@if(!$isVisiteur && $objet->type === 'Thermostat')
+@if($objet->type === 'Thermostat')
 <script>
     new Chart(document.getElementById('thermostatChart'), {
         type: 'line',
@@ -484,7 +387,7 @@
 </script>
 @endif
 
-@if(!$isVisiteur && $objet->type === 'Store électrique')
+@if($objet->type === 'Store électrique')
 <script>
     new Chart(document.getElementById('storeChart'), {
         type: 'line',
@@ -504,15 +407,7 @@
     });
 </script>
 @endif
-@if(!$isVisiteur)
-<div class="download-pdf-btn" style="text-align: center; margin-bottom: 2rem;">
-    <form id="pdfForm" action="{{ route('objets.pdf', $objet->id) }}" method="POST">
-        @csrf
-        <input type="hidden" name="chart_image" id="chartImageInput">
-        <button type="submit" class="nav-btn">📄 Générer le rapport PDF</button>
-    </form>
-</div>
-@endif
+
 @endsection
 
 
@@ -529,17 +424,14 @@
         background: #eee;
         border-radius: 5px;
     }
+
     canvas {
-        max-width: 600px;
-        height: 250px !important;
-        margin: 2rem auto;
-        display: block;
-    }   
+    max-width: 600px;
+    height: 250px !important;
+    margin: 2rem auto;
+    display: block;
+}   
 </style>
-<<<<<<< HEAD
-
-
-=======
 @if(auth()->user() && in_array(auth()->user()->role, ['complexe', 'admin']))
 <div class="download-pdf-btn" style="text-align: center; margin-top: 2rem;">
     <form id="pdfForm" action="{{ route('objets.pdf', $objet->id) }}" method="POST">
@@ -549,27 +441,27 @@
     </form>
 </div>
 @endif
->>>>>>> origin/main
 
 <script>
-document.getElementById('pdfForm')?.addEventListener('submit', function (e) {
-    const canvas = document.querySelector('canvas');
-    if (canvas) {
-        const imageData = canvas.toDataURL('image/png');
-        document.getElementById('chartImageInput').value = imageData;
-    }
-<<<<<<< HEAD
-});
+    document.getElementById('pdfForm').addEventListener('submit', function (e) {
+        const canvas = document.querySelector('canvas');
+        if (canvas) {
+            const imageData = canvas.toDataURL('image/png');
+            document.getElementById('chartImageInput').value = imageData;
+        }
+    });
+</script>
 
-function toggleOptions(id) {
-    const el = document.getElementById(id);
-    if (el.style.maxHeight === '0px' || el.style.maxHeight === '') {
-        el.style.maxHeight = '600px';
-    } else {
-        el.style.maxHeight = '0px';
+@endsection
+
+
+<script>
+    function toggleOptions(id) {
+        const el = document.getElementById(id);
+        if (el.style.maxHeight === '0px' || el.style.maxHeight === '') {
+            el.style.maxHeight = '600px';
+        } else {
+            el.style.maxHeight = '0px';
+        }
     }
-}
 </script>
-=======
-</script>
->>>>>>> origin/main
