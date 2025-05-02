@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmailAutoriseController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\Admin\UserValidationController;
 
 
 use App\Http\Controllers\UserLevelController;
@@ -87,6 +88,13 @@ Route::put('/users/{user}', [UserController::class, 'update'])->name('users.upda
 Route::post('/level-upgrade', [UserLevelController::class, 'upgrade'])->name('level.upgrade');
 
 Route::get('/profil', [ProfileController::class, 'show'])->middleware('auth')->name('profil.show');
+
+// 🔒 Zone protégée réservée à l'admin
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/utilisateurs-en-attente', [UserValidationController::class, 'index'])->name('admin.validation');
+    Route::post('/utilisateurs/{id}/valider', [UserValidationController::class, 'approve'])->name('admin.validate');
+});
+
 
 
 
