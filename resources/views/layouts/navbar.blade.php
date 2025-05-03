@@ -67,6 +67,15 @@
                 </div>
                 @endif
 
+                @if(auth()->user()->points >= 5 && auth()->user()->role !== 'admin')
+                <form action="{{ route('level.upgrade') }}" method="POST" style="margin-top: 10px;">
+                @csrf
+                <button type="submit" class="nav-btn small" style="background-color: orange; color: white;">
+                🚀 Passer au niveau suivant
+                </button>
+                </form>
+                @endif
+
                 {{-- Bouton déconnexion --}}
                 <form action="{{ route('logout') }}" method="POST" style="margin-top: 5px;">
                     @csrf

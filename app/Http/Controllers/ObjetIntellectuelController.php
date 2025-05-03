@@ -160,25 +160,30 @@ class ObjetIntellectuelController extends Controller
      * 💾 Enregistrement de la modification
      */
     public function update(Request $request, $id)
-    {
-        $data = $request->validate([
-            'nom'         => 'required|string|max:255',
-            'identifiant' => 'required|string|max:255|unique:objets_intellectuels,identifiant,' . $id,
-        ]);
+{
+    $data = $request->validate([
+        'nom'         => 'required|string|max:255',
+        'identifiant' => 'required|string|max:255|unique:objets_intellectuels,identifiant,' . $id,
+    ]);
 
-        ObjetIntellectuel::findOrFail($id)->update($data);
+    // 🔧 On récupère l'objet
+    $objet = ObjetIntellectuel::findOrFail($id);
 
-        // Ajouter une entrée dans l'historique
-        ActivityLog::create([
-            'user_id' => auth()->id(),  // L'ID de l'utilisateur connecté
-            'action' => 'Modification de l\'objet', // Description de l'action
-            'details' => 'L\'objet "' . $objet->name . '" a été modifié.', // Détails supplémentaires
-        ]);
+    // 🔁 On met à jour l'objet
+    $objet->update($data);
 
-        return redirect()
-            ->route('objets.editList')
-            ->with('success', 'Objet modifié avec succès ✔️');
-    }
+    // 📝 Historique
+    ActivityLog::create([
+        'user_id' => auth()->id(),
+        'action' => 'Modification de l\'objet',
+        'details' => 'L\'objet "' . $objet->nom . '" a été modifié.', // Attention ici c’est ->nom, pas ->name
+    ]);
+
+    return redirect()
+        ->route('objets.editList')
+        ->with('success', 'Objet modifié avec succès ✔️');
+}
+
 
     /**
      * 🔴 Liste pour choisir un objet à supprimer
