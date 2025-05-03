@@ -62,9 +62,9 @@
 
                 {{-- Bouton Admin (si expert) --}}
                 @if($isExpert)
-                <a href="{{ route('admin.validation') }}" class="nav-btn small" style="background-color: red; color: white; margin-top: 5px;">
-                    🛠️ Page Admin
-                </a>
+                <div class="nav-btn small" style="background-color: red; color: white; margin-top: 5px; cursor: default;">
+                🛠️ Page Admin
+                </div>
                 @endif
 
                 {{-- Bouton déconnexion --}}
