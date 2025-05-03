@@ -7,6 +7,7 @@ use App\Models\InteractionObjet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Models\ActivityLog;
 
 class ObjetIntellectuelController extends Controller
 {
@@ -123,6 +124,13 @@ class ObjetIntellectuelController extends Controller
         $objet->etat = $objet->etat === 'on' ? 'off' : 'on';
         $objet->save();
 
+        // Enregistrer l'action dans le log
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Modification de l\'état de l\'objet',
+            'details' => 'L\'état de l\'objet "' . $objet->name . '" a été modifié.',
+        ]);
+        
         return redirect()
             ->route('objets.show', $id)
             ->with('success', 'État modifié ✔️');
@@ -159,6 +167,13 @@ class ObjetIntellectuelController extends Controller
         ]);
 
         ObjetIntellectuel::findOrFail($id)->update($data);
+
+        // Ajouter une entrée dans l'historique
+        ActivityLog::create([
+            'user_id' => auth()->id(),  // L'ID de l'utilisateur connecté
+            'action' => 'Modification de l\'objet', // Description de l'action
+            'details' => 'L\'objet "' . $objet->name . '" a été modifié.', // Détails supplémentaires
+        ]);
 
         return redirect()
             ->route('objets.editList')

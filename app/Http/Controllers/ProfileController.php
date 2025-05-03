@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ActivityLog;
 
 class ProfileController extends Controller
 {   
@@ -63,7 +64,12 @@ class ProfileController extends Controller
         }
         $user->profile_completed = true;
         $user->save();
-
+        
+        ActivityLog::create([
+            'user_id' => auth()->id(),  // L'ID de l'utilisateur connecté
+            'action' => 'Modification du profil',  // Action
+            'details' => 'L\'utilisateur a mis à jour son profil',  // Détails de l'action
+        ]);
         // Redirection vers le tableau de bord avec message de succès
         return redirect()->back()->with('success', 'Profil mis à jour avec succès.');
 

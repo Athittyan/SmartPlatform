@@ -33,32 +33,40 @@
     </ul>
 
     <h2 style="margin-top: 40px;">👥 Membres de la famille</h2>
-<table style="width:100%; margin-top: 15px; text-align: center;">
-    <thead>
-        <tr>
-            <th>Pseudo</th>
-            <th>Rôle</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($users as $member)
+    <table style="width:100%; margin-top: 15px; text-align: center;">
+        <thead>
             <tr>
-                <td>{{ $member->pseudo }}</td>
-                <td>{{ ucfirst($member->role) }}</td>
-                <td>
-                    <a href="{{ route('users.edit', $member->id) }}" class="btn btn-primary">✏️ Modifier</a>
-
-                    <form action="{{ route('users.destroy', $member->id) }}" method="POST" style="display:inline-block;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" style="color: red;">🗑 Supprimer</button>
-                    </form>
-                </td>
+                <th>Pseudo</th>
+                <th>Rôle</th>
+                <th>Actions</th>
             </tr>
-        @endforeach
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach($users as $member)
+                <tr>
+                    <td>{{ $member->pseudo }}</td>
+                    <td>{{ ucfirst($member->role) }}</td>
+                    <td>
+                        <a href="{{ route('users.edit', $member->id) }}" class="btn btn-primary">✏️ Modifier</a>
 
+                        <form action="{{ route('users.destroy', $member->id) }}" method="POST" style="display:inline-block;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" style="color: red;">🗑 Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <!-- Bouton Historique Global -->
+    @if(auth()->user()->role === 'admin')  <!-- Afficher ce bouton uniquement si l'utilisateur est un admin -->
+        <div style="margin-top: 40px; text-align: center;">
+            <a href="{{ route('admin.activityLogs') }}" class="btn btn-lg btn-info" style="padding: 15px 30px; font-size: 20px; text-decoration: none; color: white; background-color: #007bff; border-radius: 5px;">
+                📜 Voir l'historique des actions
+            </a>
+        </div>
+    @endif
 </div>
 @endsection

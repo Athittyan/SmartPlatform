@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\ActivityLog;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -34,6 +35,12 @@ class AuthenticatedSessionController extends Controller
         if($user){
             $user->addPoints(0.25); //Ajoute 0.25 points à chaque connexion
             $user->changeLevel(); //Met à jour le niveau si les points le permettent
+
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'connexion',
+                'details' => 'Connexion réussie',
+            ]);
         }
         return redirect()->intended(route('dashboard', absolute: false));
     }
@@ -51,4 +58,6 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+    
 }

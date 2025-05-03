@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmailAutoriseController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\Admin\UserValidationController;
+use App\Http\Controllers\Admin\ActivityLogController;
 
 
 use App\Http\Controllers\UserLevelController;
@@ -77,6 +78,8 @@ Route::post('/objets/{id}/change-position',   [ObjetIntellectuelController::clas
 // Génération de PDF
 Route::post('/objets/{id}/pdf', [PdfController::class, 'generate'])->name('objets.pdf');
 
+// Route pour afficher l'historique des actions
+Route::get('/admin/activity-logs', [ActivityLogController::class, 'index'])->middleware('admin')->name('admin.activityLogs');
 
 // Routes pour l'admin uniquement
 Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');

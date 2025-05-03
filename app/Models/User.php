@@ -78,7 +78,13 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function isValidatedByAdmin()
-{
-    return $this->is_approved;
-}
+    {
+        return $this->is_approved;
+    }
+
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
 }
