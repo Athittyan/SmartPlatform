@@ -94,7 +94,12 @@ Route::get('/profil', [ProfileController::class, 'show'])->middleware('auth')->n
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/utilisateurs-en-attente', [UserValidationController::class, 'index'])->name('admin.validation');
     Route::post('/utilisateurs/{id}/valider', [UserValidationController::class, 'approve'])->name('admin.validate');
+
+    Route::post('/emails/{id}/valider', [EmailAutoriseController::class, 'approve'])->name('validate');
+    Route::delete('/emails/{id}/refuser', [EmailAutoriseController::class, 'reject'])->name('reject');
 });
+
+
 
 
 // Auth routes (register, login...)
