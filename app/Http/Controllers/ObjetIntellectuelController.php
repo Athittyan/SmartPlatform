@@ -80,41 +80,52 @@ class ObjetIntellectuelController extends Controller
         return view('objets.show', compact('objet', 'interactions'));
     }
 
-   
-
     public function store(Request $request)
     {
-    $validated = $request->validate([
-        'identifiant' => 'nullable|string|unique:objets_intellectuels,identifiant',
-        'nom' => 'required|string|max:255',
-        'type' => 'required|string',
+        $validated = $request->validate([
+            'identifiant' => 'nullable|string|unique:objets_intellectuels,identifiant',
+            'nom' => 'required|string|max:255',
+            'type' => 'required|string',
         ]);
-
-    // SI identifiant vide, on en génère un automatique
-    if (empty($validated['identifiant'])) {
-        $validated['identifiant'] = strtolower($validated['type']) . '-' . now()->format('YmdHis');
-    }
-
-    ObjetIntellectuel::create([
-        'identifiant' => $validated['identifiant'],
-        'nom' => $validated['nom'],
-        'type' => $validated['type'],
-        'temperature_actuelle' => $request->temperature_actuelle,
-        'temperature_cible' => $request->temperature_cible,
-        'mode' => $request->mode,
-        'etat' => $request->etat,
-        'luminosite' => $request->luminosite,
-        'couleur' => $request->couleur,
-        'chaine_actuelle' => $request->chaine_actuelle,
-        'volume' => $request->volume,
-        'presence' => $request->presence,
-        'duree_presence' => $request->duree_presence,
-        'position' => $request->position,
-        'derniere_interaction' => $request->derniere_interaction,
-    ]);
-
+    
+        // 🔁 Harmonisation du type
+        switch (strtolower($validated['type'])) {
+            case 'tv': $validated['type'] = 'TV'; break;
+            case 'lampe': $validated['type'] = 'Lampe'; break;
+            case 'thermostat': $validated['type'] = 'Thermostat'; break;
+            case 'store':
+            case 'store électrique': $validated['type'] = 'Store électrique'; break;
+            case 'capteur':
+            case 'capteur de présence': $validated['type'] = 'Capteur de présence'; break;
+        }
+    
+        // ✅ Identifiant généré si vide
+        if (empty($validated['identifiant'])) {
+            $validated['identifiant'] = strtolower($validated['type']) . '-' . now()->format('YmdHis');
+        }
+    
+        // 🔧 Création de l'objet
+        ObjetIntellectuel::create([
+            'identifiant' => $validated['identifiant'],
+            'nom' => $validated['nom'],
+            'type' => $validated['type'],
+            'temperature_actuelle' => $request->temperature_actuelle,
+            'temperature_cible' => $request->temperature_cible,
+            'mode' => $request->mode,
+            'etat' => $request->etat,
+            'luminosite' => $request->luminosite,
+            'couleur' => $request->couleur,
+            'chaine_actuelle' => $request->chaine_actuelle,
+            'volume' => $request->volume,
+            'presence' => $request->presence,
+            'duree_presence' => $request->duree_presence,
+            'position' => $request->position,
+            'derniere_interaction' => $request->derniere_interaction,
+        ]);
+    
         return redirect()->route('objets.index')->with('success', 'Objet ajouté avec succès.');
     }
+    
 
 
     // 🔁 Bouton Allumer / Éteindre (tous types)

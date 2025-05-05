@@ -23,14 +23,6 @@
             <option value="off" {{ request('etat') == 'off' ? 'selected' : '' }}>Déconnecté</option>
         </select>
 
-        <select name="mode" style="padding: 8px;">
-            <option value="">-- Mode --</option>
-            <option value="eco" {{ request('mode') == 'eco' ? 'selected' : '' }}>Eco</option>
-            <option value="performance" {{ request('mode') == 'performance' ? 'selected' : '' }}>Performance</option>
-            <option value="confort" {{ request('mode') == 'confort' ? 'selected' : '' }}>Confort</option>
-            <option value="off" {{ request('mode') == 'off' ? 'selected' : '' }}>Off</option>
-        </select>
-
         <button type="submit" class="nav-btn small">🔍 Rechercher</button>
     </form>
 </div>
