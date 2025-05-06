@@ -28,26 +28,6 @@
     </form>
 </div>
 
->>>>>>> 69414d8dca6173f1e0c80d5dea9b64450fd9c87e
-
-        <select name="type">
-            <option value="">Tous les types</option>
-            <option value="tv" {{ request('type') == 'tv' ? 'selected' : '' }}>TV</option>
-            <option value="thermostat" {{ request('type') == 'thermostat' ? 'selected' : '' }}>Thermostat</option>
-            <option value="lampe" {{ request('type') == 'lampe' ? 'selected' : '' }}>Lampe</option>
-            <option value="store" {{ request('type') == 'store' ? 'selected' : '' }}>Store</option>
-            <option value="capteur" {{ request('type') == 'capteur' ? 'selected' : '' }}>Capteur</option>
-        </select>
-
-        <select name="etat">
-            <option value="">Tous les états</option>
-            <option value="allumée" {{ request('etat') == 'allumée' ? 'selected' : '' }}>Allumée</option>
-            <option value="éteinte" {{ request('etat') == 'éteinte' ? 'selected' : '' }}>Éteinte</option>
-        </select>
-
-        <button type="submit">🔍</button>
-    </form>
-
     <!-- 🧠 Résultats -->
     @forelse ($objets as $objet)
 
@@ -86,7 +66,6 @@
                     </button>
                 </form>
             @endif
->>>>>>> 69414d8dca6173f1e0c80d5dea9b64450fd9c87e
         </div>
 
 
