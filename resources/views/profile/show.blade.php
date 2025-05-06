@@ -1,19 +1,72 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container" style="max-width: 700px; margin: auto;">
-    <h2 style="text-align: center; margin-bottom: 30px;">👤 Mon Profil</h2>
+<style>
+    /* Conteneur principal pour la section */
+    .container {
+        max-width: 700px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
 
-    <div style="display: flex; gap: 30px; align-items: center;">
+    /* Titre de la section Profil */
+    h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 28px;
+        color: #343a40;
+        font-weight: bold;
+    }
+
+    /* Style pour l'image de profil */
+    .profile-img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Conteneur des informations du profil */
+    .profile-info {
+        display: flex;
+        gap: 30px;
+        align-items: center;
+        margin-top: 30px;
+    }
+
+    /* Style des informations du profil */
+    .profile-info p {
+        margin: 8px 0;
+        font-size: 16px;
+        color: #495057;
+    }
+
+    .profile-info strong {
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    .nav-btn:hover {
+        background-color: #0056b3;
+    }
+
+</style>
+
+<div class="container">
+    <h2>👤 Mon Profil</h2>
+
+    <div class="profile-info">
         @if ($user->photo)
-            <img src="{{ asset('storage/' . $user->photo) }}" alt="Photo de profil"
-                 style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+            <img src="{{ asset('storage/' . $user->photo) }}" alt="Photo de profil" class="profile-img">
         @else
-            <img src="{{ asset('images/avatar.png') }}" alt="Avatar"
-                 style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+            <img src="{{ asset('images/avatar.png') }}" alt="Avatar" class="profile-img">
         @endif
 
-        <div style="flex-grow: 1;">
+        <div>
             <p><strong>Points :</strong> {{ $user->points }}</p>
             <p><strong>Niveau :</strong> {{ $user->level_id }}</p>
             <p><strong>Nom :</strong> {{ $user->name }}</p>

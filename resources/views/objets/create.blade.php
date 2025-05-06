@@ -1,6 +1,76 @@
 @extends('layouts.app')
 
 @section('content')
+    <style>
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #3490dc;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form div {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="datetime-local"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #3490dc;
+            outline: none;
+        }
+
+        .btn-green {
+            background-color: #38c172;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-green:hover {
+            background-color: #2f9e65;
+        }
+
+        .champ-optionnel {
+            transition: all 0.3s ease;
+        }
+    </style>
+
 @if(auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'complexe'))
     <div class="container">
         <h1 style="color: #3490dc; margin-bottom: 20px;">➕ Ajouter un objet intellectuel</h1>
