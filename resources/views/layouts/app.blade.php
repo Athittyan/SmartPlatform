@@ -7,14 +7,20 @@
 
     <title>SmartPlatform</title>
 
+    <!-- ✅ Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-g3mSpCg1/3Ib7m60+1LpZRXwU1EJTDKbgZroQb1lUUVyscc7RAf9yZbq8FX5eb1Z" crossorigin="anonymous">
+
+
     <!-- ✅ Feuille de style personnalisée -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0;">
+<body class="{{ request()->routeIs('home') ? '' : 'page-standard' }}">
+    
     @include('layouts.navbar')
 
-    <main style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+    <main>
         @yield('content')
+        @yield('scripts')
     </main>
 
     <script src="{{ asset('js/script.js') }}"></script>

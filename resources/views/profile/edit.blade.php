@@ -5,6 +5,13 @@
         <div style="width: 350px; padding: 30px; background-color: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
             <h2 style="text-align: center; margin-bottom: 20px;">Modifier votre profil</h2>
 
+            {{-- Message de succès --}}
+            @if (session('success'))
+                <div style="background-color: #d4edda; color: #155724; padding: 15px; margin-bottom: 20px; border: 1px solid #c3e6cb; border-radius: 5px;">
+                    ✅ {{ session('success') }}
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
                 @csrf
 
@@ -57,9 +64,9 @@
                 <div style="margin-bottom: 10px;">
                     <label for="photo">Photo de profil</label>
                     @if (auth()->user()->photo)
-                    <div style="margin-bottom: 10px; text-align: center;">
-                        <img src="{{ asset('storage/' . auth()->user()->photo) }}" alt="Photo actuelle" style="max-width: 100px; max-height: 100px; border-radius: 50%;">
-                    </div>
+                        <div style="margin-bottom: 10px; text-align: center;">
+                            <img src="{{ asset('storage/' . auth()->user()->photo) }}" alt="Photo actuelle" style="max-width: 100px; max-height: 100px; border-radius: 50%;">
+                        </div>
                     @endif
                     <input id="photo" type="file" name="photo" style="width: 100%; padding: 8px;">
                     @error('photo')

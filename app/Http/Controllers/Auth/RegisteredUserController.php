@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\EmailAutorise;
+use App\Models\Level;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,19 +30,24 @@ class RegisteredUserController extends Controller
         ]);
 
         // Vérifie si l'email est autorisé
-        if (!EmailAutorise::where('email', $request->email)->exists()) {
-            return back()->withErrors([
-                'email' => 'Cet email n\'est pas autorisé à s\'inscrire.',
-            ])->withInput();
-        }
+        //if (!EmailAutorise::where('email', $request->email)->exists()) {
+         //   return back()->withErrors([
+         //       'email' => 'Cet email n\'est pas autorisé à s\'inscrire.',
+         //   ])->withInput();
+       // }
 
+        //Récupère dynamiquement l'Id du niveau "Débutant"
+        $levelId = Level::where('name', 'Débutant')->first()->id;
+        
+        //Crée l'utilisateur avec le niveau par défaut
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'level_id' => $levelId,
         ]);
 
-        event(new Registered($user));
+        //event(new Registered($user));
 
         Auth::login($user);
 

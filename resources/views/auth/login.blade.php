@@ -5,11 +5,9 @@
         <div style="width: 350px; padding: 30px; background-color: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
             <h2 style="text-align: center; margin-bottom: 20px;">Connexion</h2>
 
-            @if (session('status'))
-
-                <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #c3e6cb;">
-
-                    {{ session('status') }}
+            @if (session('success'))
+                <div style="background-color: #d1ecf1; color: #0c5460; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #bee5eb;">
+                    {{ session('success') }}
                 </div>
             @endif
 
