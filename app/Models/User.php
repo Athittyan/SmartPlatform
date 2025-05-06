@@ -54,6 +54,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'points' => 'float',
         ];
     }
 
@@ -64,8 +65,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function addPoints(float $points)
     {
-        $this->points += $points;
-        $this->save();
+        $this->increment('points', $points);
+        //$this->points += $points; //ajoute les points à l'utilisateur
+        //$this->save(); sauvegarde l'utilisateur dans la base de données
     }
 
     public function changeLevel()

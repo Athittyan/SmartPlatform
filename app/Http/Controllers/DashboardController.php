@@ -10,7 +10,7 @@ class DashboardController extends Controller
     public function index()
     {
         if (auth()->check()) {
-            $users = \App\Models\User::all();
+            $users = auth()->user(); #\App\Models\User::all();
             return view('acceuil', compact('users'));
         }
 

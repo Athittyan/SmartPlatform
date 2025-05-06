@@ -34,6 +34,7 @@ class AuthenticatedSessionController extends Controller
         //Vérifie si user est connecté
         if($user){
             $user->addPoints(0.25); //Ajoute 0.25 points à chaque connexion
+            //dd($user->points);
             $user->changeLevel(); //Met à jour le niveau si les points le permettent
 
             ActivityLog::create([

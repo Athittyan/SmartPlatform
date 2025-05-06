@@ -53,6 +53,7 @@ class ObjetIntellectuelController extends Controller
         $viewedObjets = session()->get($sessionKey, []);
         $now = now();
 
+        #Nettoyer les anciennes consulataions de plus de 24 heures
         $viewedObjets = collect($viewedObjets)
             ->filter(function($timestamp) use ($now) {
                 return \Carbon\Carbon::parse($timestamp)->diffInHours($now) < 24;
@@ -60,13 +61,15 @@ class ObjetIntellectuelController extends Controller
             ->toArray();
 
         //Vérifie si l'objet a déjà été consulté il y a moins d'une heure
-        $lastViewed = isset($viewedObjts[$id]) ? \Carbon\Carbon::parse($viewedObjets[$id]) : null;
+        $lastViewed = isset($viewedObjets[$id]) ? \Carbon\Carbon::parse($viewedObjets[$id]) : null;
 
         if ($user && (!$lastViewed || $lastViewed->diffInMinutes($now) >= 60)) {
+            if (!isset($viewedObjets[$id])) {
             $user->addPoints(0.5);         // ajoute 0.5 point
             $user->changeLevel();          // vérifie si changement de niveau
             $viewedObjets[$id] = $now->toDateTimeString(); // met à jour la session
             session()->put($sessionKey, $viewedObjets);
+            }
         }
 
         // Récupérer les interactions associées à cet objet

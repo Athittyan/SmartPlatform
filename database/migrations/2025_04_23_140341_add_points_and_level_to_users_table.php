@@ -12,7 +12,7 @@ class AddPointsAndLevelToUsersTable extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('points')->default(0);
+            $table->integer('points')->default(0); //ajoute les colonnes
             $table->foreignId('level_id')->constrained('levels');
         });
     }
