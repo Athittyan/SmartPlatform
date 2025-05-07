@@ -11,9 +11,7 @@ use App\Models\ActivityLog;
 
 class ObjetIntellectuelController extends Controller
 {
-    /**
-     * 📄 Affiche la liste standard des objets, avec filtres et pagination
-     */
+    
     public function index(Request $request)
     {
         $query = ObjetIntellectuel::query();
@@ -34,10 +32,6 @@ class ObjetIntellectuelController extends Controller
         $objets = $query->paginate(10);
         return view('objets.index', compact('objets'));
     }
-
-    /**
-     * ➕ Formulaire de création d’un nouvel objet
-     */
     public function create()
     {
         return view('objets.create');
@@ -75,8 +69,6 @@ class ObjetIntellectuelController extends Controller
             ->take(7)
             ->get();
 
-
-        // Passer les données à la vue
         return view('objets.show', compact('objet', 'interactions'));
     }
 
@@ -87,8 +79,7 @@ class ObjetIntellectuelController extends Controller
             'nom' => 'required|string|max:255',
             'type' => 'required|string',
         ]);
-    
-        // 🔁 Harmonisation du type
+  
         switch (strtolower($validated['type'])) {
             case 'tv': $validated['type'] = 'TV'; break;
             case 'lampe': $validated['type'] = 'Lampe'; break;
@@ -99,12 +90,10 @@ class ObjetIntellectuelController extends Controller
             case 'capteur de présence': $validated['type'] = 'Capteur de présence'; break;
         }
     
-        // ✅ Identifiant généré si vide
         if (empty($validated['identifiant'])) {
             $validated['identifiant'] = strtolower($validated['type']) . '-' . now()->format('YmdHis');
         }
     
-        // 🔧 Création de l'objet
         ObjetIntellectuel::create([
             'identifiant' => $validated['identifiant'],
             'nom' => $validated['nom'],
@@ -121,21 +110,19 @@ class ObjetIntellectuelController extends Controller
             'duree_presence' => $request->duree_presence,
             'position' => $request->position,
             'derniere_interaction' => $request->derniere_interaction,
+            'cree_par_utilisateur' => true,
         ]);
     
         return redirect()->route('objets.index')->with('success', 'Objet ajouté avec succès.');
     }
     
-
-
-    // 🔁 Bouton Allumer / Éteindre (tous types)
     public function toggleEtat($id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
         $objet->etat = $objet->etat === 'on' ? 'off' : 'on';
             $objet->save();
 
-        // Enregistrer l'action dans le log
+        
         ActivityLog::create([
             'user_id' => auth()->id(),
             'action' => 'Modification de l\'état de l\'objet',
@@ -148,120 +135,223 @@ class ObjetIntellectuelController extends Controller
     }
 
     public function changeVolume(Request $request, $id)
-    {
-        $objet = ObjetIntellectuel::findOrFail($id);
+{
+    $objet = ObjetIntellectuel::findOrFail($id);
 
-        if ($objet->type === 'TV') {
-            $request->validate(['volume' => 'required|integer|min:0|max:100']);
-            $objet->volume = $request->volume;
-            $objet->save();
+    if ($objet->type === 'TV') {
+        $request->validate(['volume' => 'required|integer|min:0|max:100']);
+        $valeurAvant = $objet->volume;
+
+        $objet->volume = $request->volume;
+        $objet->save();
+
+        if ($objet->cree_par_utilisateur) {
+            \App\Models\InteractionObjet::create([
+                'objet_intellectuel_id' => $objet->id,
+                'action' => 'changer volume',
+                'valeurs_avant' => json_encode(['volume' => $valeurAvant]),
+                'valeurs_apres' => json_encode(['volume' => $objet->volume]),
+                'consommation_energie' => $this->simulerConsommation($objet->type, 'changer volume'),
+            ]);
         }
-
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Volume modifié !');
     }
 
-    public function changeChaine(Request $request, $id)
-    {
-        $objet = ObjetIntellectuel::findOrFail($id);
+    return redirect()->route('objets.show', $objet->id)->with('success', 'Volume modifié !');
+}
 
-        if ($objet->type === 'TV') {
-            $request->validate(['chaine' => 'required|string|max:100']);
-            $objet->chaine_actuelle = $request->chaine;
-            $objet->save();
+public function changeChaine(Request $request, $id)
+{
+    $objet = ObjetIntellectuel::findOrFail($id);
+
+    if ($objet->type === 'TV') {
+        $request->validate(['chaine' => 'required|string|max:100']);
+        $valeurAvant = $objet->chaine_actuelle;
+
+        $objet->chaine_actuelle = $request->chaine;
+        $objet->save();
+
+        if ($objet->cree_par_utilisateur) {
+            \App\Models\InteractionObjet::create([
+                'objet_intellectuel_id' => $objet->id,
+                'action' => 'changer chaîne',
+                'valeurs_avant' => json_encode(['chaine_actuelle' => $valeurAvant]),
+                'valeurs_apres' => json_encode(['chaine_actuelle' => $objet->chaine_actuelle]),
+                'consommation_energie' => $this->simulerConsommation($objet->type, 'changer chaine'),
+            ]);
         }
-
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Chaîne modifiée !');
     }
+
+    return redirect()->route('objets.show', $objet->id)->with('success', 'Chaîne modifiée !');
+}
+
 
     public function changeLuminosite(Request $request, $id)
-    {
-        $objet = ObjetIntellectuel::findOrFail($id);
+{
+    $objet = ObjetIntellectuel::findOrFail($id);
 
-        if ($objet->type === 'Lampe') {
-            $request->validate(['luminosite' => 'required|integer|min:0|max:100']);
-            $objet->luminosite = $request->luminosite;
-            $objet->save();
+    if ($objet->type === 'Lampe') {
+        $request->validate(['luminosite' => 'required|integer|min:0|max:100']);
+
+        $valeurAvant = $objet->luminosite;
+
+        // Mise à jour de la valeur
+        $objet->luminosite = $request->luminosite;
+        $objet->save();
+
+        if ($objet->cree_par_utilisateur) {
+            \App\Models\InteractionObjet::create([
+                'objet_intellectuel_id' => $objet->id,
+                'action' => 'changer luminosité',
+                'valeurs_avant' => json_encode(['luminosite' => $valeurAvant]),
+                'valeurs_apres' => json_encode(['luminosite' => $objet->luminosite]),
+                'consommation_energie' => $this->simulerConsommation($objet->type, 'changer luminosité'),
+            ]);
         }
-
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Luminosité modifiée !');
     }
 
-    public function changeCouleur(Request $request, $id)
-    {
-        $objet = ObjetIntellectuel::findOrFail($id);
+    return redirect()->route('objets.show', $objet->id)->with('success', 'Luminosité modifiée !');
+}
 
-        if ($objet->type === 'Lampe') {
-            $request->validate(['couleur' => 'required|string|max:20']);
-            $objet->couleur = $request->couleur;
-            $objet->save();
+public function changeCouleur(Request $request, $id)
+{
+    $objet = ObjetIntellectuel::findOrFail($id);
+
+    if ($objet->type === 'Lampe') {
+        $request->validate(['couleur' => 'required|string|max:20']);
+        $valeurAvant = $objet->couleur;
+
+        $objet->couleur = $request->couleur;
+        $objet->save();
+
+        if ($objet->cree_par_utilisateur) {
+            \App\Models\InteractionObjet::create([
+                'objet_intellectuel_id' => $objet->id,
+                'action' => 'changer couleur',
+                'valeurs_avant' => json_encode(['couleur' => $valeurAvant]),
+                'valeurs_apres' => json_encode(['couleur' => $objet->couleur]),
+                'consommation_energie' => $this->simulerConsommation($objet->type, 'changer couleur'),
+            ]);
         }
-
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Couleur modifiée !');
     }
 
-    public function changeTemperature(Request $request, $id)
-    {
-        $objet = ObjetIntellectuel::findOrFail($id);
+    return redirect()->route('objets.show', $objet->id)->with('success', 'Couleur modifiée !');
+}
 
-        if ($objet->type === 'Thermostat') {
-            $request->validate(['temperature' => 'required|numeric|min:5|max:35']);
-            $objet->temperature_cible = $request->temperature;
-            $objet->save();
+public function changeTemperature(Request $request, $id)
+{
+    $objet = ObjetIntellectuel::findOrFail($id);
+
+    if ($objet->type === 'Thermostat') {
+        $request->validate(['temperature' => 'required|numeric|min:5|max:35']);
+        $valeurAvant = $objet->temperature_cible;
+
+        $objet->temperature_cible = $request->temperature;
+        $objet->save();
+
+        if ($objet->cree_par_utilisateur) {
+            \App\Models\InteractionObjet::create([
+                'objet_intellectuel_id' => $objet->id,
+                'action' => 'changer température',
+                'valeurs_avant' => json_encode(['temperature_cible' => $valeurAvant]),
+                'valeurs_apres' => json_encode(['temperature_cible' => $objet->temperature_cible]),
+                'consommation_energie' => null,
+            ]);
         }
-
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Température modifiée !');
     }
 
-    public function changeMode(Request $request, $id)
-    {
-        $objet = ObjetIntellectuel::findOrFail($id);
+    return redirect()->route('objets.show', $objet->id)->with('success', 'Température modifiée !');
+}
 
-        if ($objet->type === 'Thermostat') {
-            $request->validate(['mode' => 'required|string|in:off,eco,comfort']);
-            $objet->mode = $request->mode;
-            $objet->save();
+public function changeMode(Request $request, $id)
+{
+    $objet = ObjetIntellectuel::findOrFail($id);
+
+    if ($objet->type === 'Thermostat') {
+        $request->validate(['mode' => 'required|string|in:off,eco,comfort']);
+        $valeurAvant = $objet->mode;
+
+        $objet->mode = $request->mode;
+        $objet->save();
+
+        if ($objet->cree_par_utilisateur) {
+            \App\Models\InteractionObjet::create([
+                'objet_intellectuel_id' => $objet->id,
+                'action' => 'changer mode',
+                'valeurs_avant' => json_encode(['mode' => $valeurAvant]),
+                'valeurs_apres' => json_encode(['mode' => $objet->mode]),
+                'consommation_energie' => null,
+            ]);
         }
-
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Mode modifié !');
     }
 
-    public function changePosition(Request $request, $id)
-    {
-        $objet = ObjetIntellectuel::findOrFail($id);
+    return redirect()->route('objets.show', $objet->id)->with('success', 'Mode modifié !');
+}
 
-        if ($objet->type === 'Store électrique') {
-            $request->validate(['position' => 'required|integer|min:0|max:100']);
-            $objet->position = $request->position;
-            $objet->save();
+public function changePosition(Request $request, $id)
+{
+    $objet = ObjetIntellectuel::findOrFail($id);
+
+    if ($objet->type === 'Store électrique') {
+        $request->validate(['position' => 'required|integer|min:0|max:100']);
+        $valeurAvant = $objet->position;
+
+        $objet->position = $request->position;
+        $objet->save();
+
+        if ($objet->cree_par_utilisateur) {
+            \App\Models\InteractionObjet::create([
+                'objet_intellectuel_id' => $objet->id,
+                'action' => 'changer position',
+                'valeurs_avant' => json_encode(['position' => $valeurAvant]),
+                'valeurs_apres' => json_encode(['position' => $objet->position]),
+                'consommation_energie' => null,
+            ]);
         }
-
-        return redirect()->route('objets.show', $objet->id)->with('success', 'Position modifiée !');
     }
 
-    
+    return redirect()->route('objets.show', $objet->id)->with('success', 'Position modifiée !');
+}
+
+private function simulerConsommation($type, $action)
+{
+    switch ($type) {
+        case 'TV':
+            if (str_contains($action, 'volume')) return rand(5, 15) / 10; // 0.5 à 1.5
+            if (str_contains($action, 'chaîne')) return rand(2, 8) / 10; // 0.2 à 0.8
+            break;
+
+        case 'Lampe':
+            if (str_contains($action, 'luminosité')) return rand(2, 10) / 10;
+            if (str_contains($action, 'couleur')) return rand(1, 5) / 10;
+            break;
+
+        case 'Thermostat':
+            return rand(8, 20) / 10; // 0.8 à 2.0
+        
+        case 'Store électrique':
+            return rand(3, 12) / 10;
+
+        default:
+            return null;
+    }
+}
 
 
-    /**
-     * 🌐 Liste pour choisir un objet à modifier
-     */
+
     public function editList()
     {
         $objets = ObjetIntellectuel::all();
         return view('objets.edit-list', compact('objets'));
     }
 
-    /**
-     * ✏️ Formulaire d’édition
-     */
+
     public function edit($id)
     {
         $objet = ObjetIntellectuel::findOrFail($id);
         return view('objets.edit', compact('objet'));
     }
 
-    /**
-     * 💾 Enregistrement de la modification
-     */
+
     public function update(Request $request, $id)
 {
     $data = $request->validate([
@@ -269,13 +359,13 @@ class ObjetIntellectuelController extends Controller
         'identifiant' => 'required|string|max:255|unique:objets_intellectuels,identifiant,' . $id,
     ]);
 
-    // 🔧 On récupère l'objet
+ 
         $objet = ObjetIntellectuel::findOrFail($id);
 
-    // 🔁 On met à jour l'objet
+
     $objet->update($data);
 
-    // 📝 Historique
+
     ActivityLog::create([
         'user_id' => auth()->id(),
         'action' => 'Modification de l\'objet',
@@ -287,10 +377,6 @@ class ObjetIntellectuelController extends Controller
         ->with('success', 'Objet modifié avec succès ✔️');
     }
 
-
-    /**
-     * 🔴 Liste pour choisir un objet à supprimer
-     */
     public function deleteList()
     {
         $objets = ObjetIntellectuel::all();
@@ -308,9 +394,7 @@ class ObjetIntellectuelController extends Controller
             ->with('success', "Demande de suppression envoyée à l'admin ✔️");
     }
 
-    /**
-     * ❌ Suppression de l’objet (admin uniquement)
-     */
+
     public function destroy($id)
     {
         ObjetIntellectuel::findOrFail($id)->delete();
@@ -319,6 +403,7 @@ class ObjetIntellectuelController extends Controller
             ->route('objets.deleteList')
             ->with('success', 'Objet supprimé avec succès ❌');
     }
+    
 
     
 }

@@ -55,9 +55,9 @@
             @if($objet->type === 'TV')
                 <button onclick="toggleOptions('tv-options')" style="margin-top: 1rem;">🎛️ Options Télé</button>
                 <div id="tv-options" style="max-height: 0; overflow: hidden; transition: max-height 0.5s ease;">
-                    <form action="{{ route('objets.toggleEtat', $objet->id) }}" method="POST" style="margin: 1rem 0;">@csrf
-                        <button type="submit">{{ $objet->etat === 'on' ? 'Éteindre' : 'Allumer' }}</button>
-                    </form>
+                <form action="{{ route('objets.toggleEtat', $objet->id) }}" method="POST" style="margin: 1rem 0;">@csrf
+                    <button type="submit">{{ $objet->etat === 'on' ? 'Éteindre' : 'Allumer' }}</button>
+                </form>
                     <form action="{{ route('objets.changeVolume', $objet->id) }}" method="POST" style="margin-bottom: 1rem;">@csrf
                         <label>Volume : <span id="volume-value">{{ $objet->volume }}</span>%</label><br>
                         <input type="range" name="volume" min="0" max="100" value="{{ $objet->volume }}" oninput="document.getElementById('volume-value').textContent = this.value">
@@ -78,7 +78,8 @@
                     <form action="{{ route('objets.toggleEtat', $objet->id) }}" method="POST" style="margin: 1rem 0;">@csrf
                         <button type="submit">{{ $objet->etat === 'on' ? 'Éteindre' : 'Allumer' }}</button>
                     </form>
-                    <form action="{{ route('objets.changeLuminosite', $objet->id) }}" method="POST">@csrf
+                    <form action="{{ route('objets.changeLuminosite', $objet->id) }}" method="POST">
+                    @csrf
                         <label>Luminosité : <span id="luminosite-value">{{ $objet->luminosite }}</span>%</label><br>
                         <input type="range" name="luminosite" min="0" max="100" value="{{ $objet->luminosite }}" oninput="document.getElementById('luminosite-value').textContent = this.value">
                         <button type="submit">💡 Appliquer</button>
@@ -135,278 +136,81 @@
 </div>
 
 @if(auth()->user() && in_array(auth()->user()->role, ['complexe', 'admin']))
-    {{-- INTERACTIONS TV --}}
-    @if($objet->type === 'TV' && $interactions->count())
-        <h2 class="section-title">📺 Historique des interactions (TV)</h2>
-        <div class="interactions-wrapper">
-            <table class="interactions-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Action</th>
-                        <th>Valeurs avant</th>
-                        <th>Valeurs après</th>
-                        <th>Conso énergie (W)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($interactions as $interaction)
-                        @php
-                            $avant = json_decode($interaction->valeurs_avant, true) ?? [];
-                            $apres = json_decode($interaction->valeurs_apres, true) ?? [];
-                        @endphp
-                        <tr>
-                            <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
-                            <td>{{ ucfirst($interaction->action) }}</td>
-                            <td>
-                                @if(isset($avant['etat'])) État : {{ $avant['etat'] }}<br>@endif
-                                @if(isset($avant['volume'])) Volume : {{ $avant['volume'] }}<br>@endif
-                                @if(isset($avant['chaine_actuelle'])) Chaîne : {{ $avant['chaine_actuelle'] }}@endif
-                            </td>
-                            <td>
-                                @if(isset($apres['etat'])) État : {{ $apres['etat'] }}<br>@endif
-                                @if(isset($apres['volume'])) Volume : {{ $apres['volume'] }}<br>@endif
-                                @if(isset($apres['chaine_actuelle'])) Chaîne : {{ $apres['chaine_actuelle'] }}@endif
-                            </td>
-                            <td>{{ $interaction->consommation_energie ?? '—' }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-            <canvas id="tvChart"></canvas>
-        </div>
-    @endif
-
-    {{-- INTERACTIONS LAMPE --}}
-    @if($objet->type === 'Lampe' && $interactions->count())
-        <h2 class="section-title">💡 Historique des interactions (Lampe)</h2>
-        <div class="interactions-wrapper">
-            <table class="interactions-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Action</th>
-                        <th>Avant</th>
-                        <th>Après</th>
-                        <th>Conso énergie (W)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($interactions as $interaction)
-                        @php
-                            $avant = json_decode($interaction->valeurs_avant, true) ?? [];
-                            $apres = json_decode($interaction->valeurs_apres, true) ?? [];
-                        @endphp
-                        <tr>
-                            <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
-                            <td>{{ ucfirst($interaction->action) }}</td>
-                            <td>
-                                @if(isset($avant['etat'])) État : {{ $avant['etat'] }}<br>@endif
-                                @if(isset($avant['luminosite'])) Luminosité : {{ $avant['luminosite'] }}%<br>@endif
-                                @if(isset($avant['couleur'])) Couleur : {{ $avant['couleur'] }}@endif
-                            </td>
-                            <td>
-                                @if(isset($apres['etat'])) État : {{ $apres['etat'] }}<br>@endif
-                                @if(isset($apres['luminosite'])) Luminosité : {{ $apres['luminosite'] }}%<br>@endif
-                                @if(isset($apres['couleur'])) Couleur : {{ $apres['couleur'] }}@endif
-                            </td>
-                            <td>{{ $interaction->consommation_energie ?? '—' }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-            <canvas id="lampChart"></canvas>
-        </div>
-    @endif
-
-    @if($objet->type === 'Thermostat' && $interactions->count())
-    <h2 class="section-title">🌡️ Historique des interactions (Thermostat)</h2>
-
-    <div class="interactions-wrapper">
-        <table class="interactions-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Action</th>
-                    <th>Avant</th>
-                    <th>Après</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($interactions as $interaction)
-                    @php
-                        $avant = json_decode($interaction->valeurs_avant, true) ?? [];
-                        $apres = json_decode($interaction->valeurs_apres, true) ?? [];
-                    @endphp
-                    <tr>
-                        <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
-                        <td>{{ ucfirst($interaction->action) }}</td>
-                        <td>
-                            @if(isset($avant['etat'])) État : {{ $avant['etat'] }}<br> @endif
-                            @if(isset($avant['temperature_cible'])) Température cible : {{ $avant['temperature_cible'] }}°C @endif
-                        </td>
-                        <td>
-                            @if(isset($apres['etat'])) État : {{ $apres['etat'] }}<br> @endif
-                            @if(isset($apres['temperature_cible'])) Température cible : {{ $apres['temperature_cible'] }}°C @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-        <canvas id="thermostatChart"></canvas>
+<h2 class="section-title">📜 Historique des interactions ({{ $objet->type }})</h2>
+    <div class="interactions-wrapper" id="tableau-interactions">
+        @include('objets.historique', ['interactions' => $interactions, 'objet' => $objet])
     </div>
-    @endif
+@endif
 
-
-    @if($objet->type === 'Store électrique' && $interactions->count())
-        <h2 class="section-title">🪟 Historique des interactions (Store)</h2>
-
-        <div class="interactions-wrapper">
-            <table class="interactions-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Action</th>
-                        <th>Avant</th>
-                        <th>Après</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($interactions as $interaction)
-                        @php
-                            $avant = json_decode($interaction->valeurs_avant, true) ?? [];
-                            $apres = json_decode($interaction->valeurs_apres, true) ?? [];
-                        @endphp
-                        <tr>
-                            <td>{{ $interaction->created_at->format('d/m/Y H:i') }}</td>
-                            <td>{{ ucfirst($interaction->action) }}</td>
-                            <td>
-                                @if(isset($avant['position']))
-                                    Position : {{ $avant['position'] }}%
-                                @else
-                                    —
-                                @endif
-                            </td>
-                            <td>
-                                @if(isset($apres['position']))
-                                    Position : {{ $apres['position'] }}%
-                                @else
-                                    —
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-            <canvas id="storeChart"></canvas>
-        </div>
-    @endif
+@if(in_array($objet->type, ['TV', 'Lampe', 'Thermostat', 'Store électrique']))
+    <canvas id="chartCanvas" class="mt-4"></canvas>
 @endif
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-@if($objet->type === 'TV')
 <script>
-    new Chart(document.getElementById('tvChart'), {
-        type: 'line',
-        data: {
-            labels: {!! json_encode($interactions->pluck('created_at')->map->format('d/m/Y H:i')) !!},
-            datasets: [{
-                label: 'Consommation énergie (W)',
-                data: {!! json_encode($interactions->pluck('consommation_energie')) !!},
-                borderColor: 'rgba(75, 192, 192, 1)',
-                tension: 0.3,
-                fill: false
-            }]
-        }
-    });
-</script>
-@endif
+    const labels = {!! json_encode($interactions->pluck('created_at')->map->format('d/m/Y H:i')) !!};
 
-@if($objet->type === 'Lampe')
-<script>
-    new Chart(document.getElementById('lampChart'), {
-        type: 'line',
-        data: {
-            labels: {!! json_encode($interactions->pluck('created_at')->map->format('d/m/Y H:i')) !!},
-            datasets: [{
-                label: 'Consommation énergie (W)',
-                data: {!! json_encode($interactions->pluck('consommation_energie')) !!},
-                borderColor: 'rgba(255, 193, 7, 1)',
-                tension: 0.3,
-                fill: false
-            }]
-        }
-    });
-</script>
-@endif
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: "{{ $objet->type === 'Thermostat' ? 'Température cible (°C)' : ($objet->type === 'Store électrique' ? 'Position du store (%)' : 'Consommation énergie (W)') }}",
+            data: {!! json_encode($interactions->map(function ($item) use ($objet) {
+                $after = json_decode($item->valeurs_apres, true) ?? [];
+                if ($objet->type === 'Thermostat') return $after['temperature_cible'] ?? null;
+                if ($objet->type === 'Store électrique') return $after['position'] ?? null;
+                return $item->consommation_energie ?? null;
+            })) !!},
+            borderColor: 'rgba(75, 192, 192, 1)',
+            tension: 0.3,
+            fill: false
+        }]
+    };
 
-@if($objet->type === 'Thermostat')
+    if (document.getElementById('chartCanvas')) {
+        new Chart(document.getElementById('chartCanvas'), {
+            type: 'line',
+            data: data
+        });
+    }
+</script>
+
+
 <script>
-    new Chart(document.getElementById('thermostatChart'), {
-        type: 'line',
-        data: {
-            labels: {!! json_encode($interactions->pluck('created_at')->map->format('d/m/Y H:i')) !!},
-            datasets: [{
-                label: 'Température cible (°C)',
-                data: {!! json_encode($interactions->map(function ($item) {
-                    $after = json_decode($item->valeurs_apres, true) ?? [];
-                    return $after['temperature_cible'] ?? null;
-                })) !!},
-                borderColor: 'rgba(255, 99, 132, 1)',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                tension: 0.3,
-                fill: true,
-                pointRadius: 4
-            }]
+function effectuerAction(objetId, action, valeurAvant, valeurApres) {
+    fetch(`/objets/${objetId}/interactions`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Température (°C)'
-                    },
-                    beginAtZero: false
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Date / Heure'
-                    }
-                }
-            }
-        }
+        body: JSON.stringify({
+            action: action,
+            valeurs_avant: valeurAvant,
+            valeurs_apres: valeurApres
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('✅ Interaction enregistrée !');
+        // Recharge l'historique automatiquement
+        rechargerHistorique(objetId);
     });
+}
+function changerLuminosite(objetId, avant) {
+    const apres = document.getElementById('luminosite-input').value;
+    effectuerAction(objetId, 'changer luminosité', { luminosite: avant }, { luminosite: apres });
+}
+function rechargerHistorique(objetId) {
+    fetch(`/objets/${objetId}/historique`)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('tableau-interactions').innerHTML = html;
+        });
+}
 </script>
-@endif
 
-@if($objet->type === 'Store électrique')
-<script>
-    new Chart(document.getElementById('storeChart'), {
-        type: 'line',
-        data: {
-            labels: {!! json_encode($interactions->pluck('created_at')->map->format('d/m/Y H:i')) !!},
-            datasets: [{
-                label: 'Position du store (%)',
-                data: {!! json_encode($interactions->map(function ($item) {
-                    $after = json_decode($item->valeurs_apres, true) ?? [];
-                    return $after['position'] ?? null;
-                })) !!},
-                borderColor: 'rgba(153, 102, 255, 1)',
-                tension: 0.3,
-                fill: false
-            }]
-        }
-    });
-</script>
-@endif
 
 @endsection
 

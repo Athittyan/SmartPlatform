@@ -104,6 +104,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 });
 
 
+Route::post('/objets/{id}/interactions', [InteractionController::class, 'store'])->name('interactions.store');
+Route::get('/objets/{id}/interactions', [InteractionController::class, 'getHistorique']);
+
+Route::post('/objets/{id}/luminosite', [ObjetIntellectuelController::class, 'updateLuminosite']);
+
 
 
 // Auth routes (register, login...)

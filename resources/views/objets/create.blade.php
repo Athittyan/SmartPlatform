@@ -87,6 +87,7 @@
                 <input type="text" name="nom" required>
             </div>
 
+            
             <div>
                 <label>Type :</label>
                 <select name="type" id="type" onchange="afficherChampsSpecifiques()" required>
@@ -98,6 +99,16 @@
                     <option value="store">Store Électrique</option>
                 </select>
             </div>
+
+            <div id="champ-etat" class="champ-optionnel" style="display: none;">
+                <label>État :</label>
+                <select name="etat">
+                    <option value="">-- Choisir --</option>
+                    <option value="allumée">Allumée</option>
+                    <option value="éteinte">Éteinte</option>
+                </select>
+            </div>
+
 
             {{-- THERMOSTAT --}}
             <div id="champ-temperature" class="champ-optionnel" style="display: none;">
@@ -116,14 +127,6 @@
             </div>
 
             {{-- LAMPE --}}
-            <div id="champ-etat" class="champ-optionnel" style="display: none;">
-                <label>État :</label>
-                <select name="etat">
-                    <option value="">-- Choisir --</option>
-                    <option value="allumée">Allumée</option>
-                    <option value="éteinte">Éteinte</option>
-                </select>
-            </div>
 
             <div id="champ-luminosite" class="champ-optionnel" style="display: none;">
                 <label>Luminosité (%) :</label>
@@ -177,36 +180,40 @@
         </form>
     </div>
 @endif
-    <script>
-        function afficherChampsSpecifiques() {
-            const type = document.getElementById("type").value;
+<script>
+    function afficherChampsSpecifiques() {
+        const type = document.getElementById('type').value;
 
-            document.querySelectorAll(".champ-optionnel").forEach(el => el.style.display = "none");
+        // On commence par tout cacher
+        document.querySelectorAll('.champ-optionnel').forEach(div => {
+            div.style.display = 'none';
+        });
 
-            if (type === "thermostat") {
-                afficher(["champ-temperature", "champ-temperature_cible", "champ-mode"]);
-            }
-            else if (type === "lampe") {
-                afficher(["champ-etat", "champ-luminosite", "champ-couleur"]);
-            }
-            else if (type === "tv") {
-                afficher(["champ-chaine", "champ-volume"]);
-            }
-            else if (type === "capteur") {
-                afficher(["champ-presence", "champ-duree"]);
-            }
-            else if (type === "store") {
-                afficher(["champ-position", "champ-mode"]);
-            }
+        // ✅ Toujours afficher le champ "État"
+        document.getElementById('champ-etat').style.display = 'block';
 
-            afficher(["champ-interaction"]);
+        // ✅ Affichage des champs spécifiques selon le type choisi
+        if (type === 'thermostat') {
+            document.getElementById('champ-temperature').style.display = 'block';
+            document.getElementById('champ-temperature_cible').style.display = 'block';
+            document.getElementById('champ-mode').style.display = 'block';
+        } else if (type === 'lampe') {
+            document.getElementById('champ-luminosite').style.display = 'block';
+            document.getElementById('champ-couleur').style.display = 'block';
+        } else if (type === 'tv') {
+            document.getElementById('champ-chaine').style.display = 'block';
+            document.getElementById('champ-volume').style.display = 'block';
+        } else if (type === 'capteur') {
+            document.getElementById('champ-presence').style.display = 'block';
+            document.getElementById('champ-duree').style.display = 'block';
+        } else if (type === 'store') {
+            document.getElementById('champ-position').style.display = 'block';
+            document.getElementById('champ-mode').style.display = 'block';
         }
 
-        function afficher(ids) {
-            ids.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.style.display = "block";
-            });
-        }
-    </script>
+        // ✅ Ce champ s’applique à tous les types
+        document.getElementById('champ-interaction').style.display = 'block';
+    }
+</script>
+
 @endsection

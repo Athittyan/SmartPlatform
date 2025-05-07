@@ -24,6 +24,13 @@ class ObjetIntellectuel extends Model
         'duree_presence',
         'position',
         'derniere_interaction',
+        'cree_par_utilisateur' 
     ];
-    
+
+    public function interactions()
+    {
+        return $this->hasMany(\App\Models\InteractionObjet::class);
+    }
 }
+    
+
