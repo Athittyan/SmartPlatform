@@ -141,9 +141,10 @@
         @include('objets.historique', ['interactions' => $interactions, 'objet' => $objet])
     </div>
 @endif
-
+@if(auth()->check() && in_array(auth()->user()->role, ['complexe', 'admin']))
 @if(in_array($objet->type, ['TV', 'Lampe', 'Thermostat', 'Store électrique']))
     <canvas id="chartCanvas" class="mt-4"></canvas>
+@endif
 @endif
 
 @section('scripts')
